@@ -1,0 +1,24 @@
+Flask
+Flask-Bootstrap
+Flask-WTF
+
+marshmallow
+tinydb
+python-magic
+
+# arrow
+# pytz
+# fuzzywuzzy[speedup]
+# markdown
+# purl
+## beanstalkc
+## python-slugify
+## streql
+## bleach
+## braintree
+## PyYAML
+## pycrypto
+## ipaddress
+## pyotp
+## qrcode
+## requests

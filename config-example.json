@@ -1,0 +1,12 @@
+{
+    "DEBUG": false,
+    "SECRET_KEY": "Put a real secret key here",
+
+    "BOOTSTRAP_SERVE_LOCAL": true,
+    "TEMPLATES_AUTO_RELOAD": true,
+
+    "DATA_DIRECTORY": "./data",
+
+    "_DEFAULT_TIMEZONE": "America/Chicago",
+    "SITE_NAME": "Drink Menu"
+}
