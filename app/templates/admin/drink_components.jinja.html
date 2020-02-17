@@ -1,0 +1,39 @@
+{% extends "base.jinja.html" %}
+
+{% block title %}Drink Components{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>In Stock?</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in drink_components %}
+                    <tr>
+                        <td>{{ d.image |image(size='xs') }}</td>
+                        <td>{{ d.name }}</td>
+                        <td>{{ d.description }}</td>
+                        <td>{{ types.get(d.type_, "UNKNOWN") }}</td>
+                        <td>{{ d.in_stock |bool_label }}</td>
+                        <td>
+                            <form class="form-inline" method="POST" action="{{ url_for('.delete_drink_component', id=d.doc_id) }}">
+                                <a class="btn btn-primary btn-xs" href="{{ url_for('.edit_drink_component', id=d.doc_id) }}">Edit</a>
+                                <input type="submit" class="btn btn-danger btn-xs" value="Delete" />
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="btn btn-primary" href="{{ url_for('.edit_drink_component') }}">Add New</a>
+    </div>
+{% endblock %}

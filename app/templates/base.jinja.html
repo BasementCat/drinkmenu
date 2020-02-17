@@ -18,6 +18,7 @@
                 <ul class="nav navbar-nav">
                     <li class="{{ 'active' if request.url_rule.endpoint == 'admin.index' else '' }}"><a href="{{ url_for('admin.index') }}">Admin</a></li>
                     <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drinks' else '' }}"><a href="{{ url_for('admin.drinks') }}">Drinks</a></li>
+                    <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drink_components' else '' }}"><a href="{{ url_for('admin.drink_components') }}">Drink Components</a></li>
                 </ul>
             {% endif %}
         </div><!--/.nav-collapse -->

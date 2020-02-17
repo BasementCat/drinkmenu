@@ -1,0 +1,10 @@
+{% extends "base.jinja.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Edit Drink Component{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {{ wtf.quick_form(form) }}
+    </div>
+{% endblock %}

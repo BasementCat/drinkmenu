@@ -87,3 +87,18 @@ class Drink(HasImageMixin(), Model):
         has_strengths = fields.Boolean(default=True)
         in_stock = fields.Boolean(default=True)
         image = fields.Str()
+
+
+class DrinkComponent(HasImageMixin(), Model):
+    TYPES = {
+        'liquor': 'Liquor',
+        'mixer': 'Mixer',
+        'other': 'Other',
+    }
+
+    class _schema(BaseSchema):
+        name = fields.Str()
+        description = fields.Str()
+        type_ = fields.Str()
+        in_stock = fields.Boolean(default=True)
+        image = fields.Str()
