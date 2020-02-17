@@ -2,6 +2,13 @@
 
 {% block content %}
     <div class="container">
-        foobar
+        <a class="btn btn-default image-button" href="{{ url_for('.drinks') }}">
+            <img src="{{ url_for('static', filename='images/drink.jpg') }}" />
+            <span>Drinks</span>
+        </a>
+        <a class="btn btn-default image-button" href="#">
+            <img src="{{ url_for('static', filename='images/bottles.png') }}" />
+            <span>Drink Components</span>
+        </a>
     </div>
 {% endblock %}

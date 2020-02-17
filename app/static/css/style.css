@@ -1,0 +1,12 @@
+.image-button {
+    text-align: center;
+}
+.image-button img {
+    max-width: 250px;
+}
+.image-button span {
+    display: block;
+    clear: both;
+    font-size: 1.3em;
+    font-weight: bold;
+}
