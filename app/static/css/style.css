@@ -10,3 +10,7 @@
     font-size: 1.3em;
     font-weight: bold;
 }
+
+.media .media-object {
+    max-width: 128px;
+}

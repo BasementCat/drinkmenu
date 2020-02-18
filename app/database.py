@@ -54,6 +54,20 @@ class Model:
         out._load_self(res)
         return out
 
+    @classmethod
+    def find(cls, *doc_ids, **filters):
+        if doc_ids:
+            return list(filter(None, (cls.get(i) for i in doc_ids)))
+
+        query = Query()
+        conditions = []
+        for k, v in filters.items():
+            conditions.append(getattr(query, k) == v)
+        search = conditions.pop(0)
+        for cond in conditions:
+            search = search & cond
+        return cls._get_table().search(search)
+
     def save(self):
         data = self._get_schema().dump(self)
         if self.doc_id:
@@ -77,6 +91,15 @@ def HasImageMixin(image_field_name='image'):
                 if os.path.exists(filename):
                     os.unlink(filename)
     return HasImageMixinImpl
+
+
+# TODO: this probably doesn't belong here
+STRENGTHS = {
+    'mocktail': 'Mocktail',
+    'light': 'Light',
+    'normal': 'Normal',
+    'strong': 'Strong',
+}
 
 
 class Drink(HasImageMixin(), Model):
@@ -103,3 +126,18 @@ class DrinkComponent(HasImageMixin(), Model):
         type_ = fields.Str()
         in_stock = fields.Boolean(default=True)
         image = fields.Str()
+
+
+class SavedOrder(Model):
+    class _schema(BaseSchema):
+        drink_name = fields.Str()
+        drink_components = fields.List(fields.Integer())
+
+
+class Order(Model):
+    class _schema(BaseSchema):
+        name = fields.Str()
+        drink_name = fields.Str()
+        drink = fields.Integer()
+        drink_components = fields.List(fields.Integer())
+        strength = fields.Str()

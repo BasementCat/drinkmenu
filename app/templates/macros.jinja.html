@@ -1,0 +1,18 @@
+{% macro render_drink(d, cols=[4, 6, 12, 12], order=True) %}
+    <div class="col-lg-{{ cols[0] }} col-md-{{ cols[1] }} col-sm-{{ cols[2] }} col-xs-{{ cols[3] }}">
+        <div class="media">
+            <div class="media-left">
+                <a>
+                    {{ d.image |image(class_="media-object") }}
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">{{ d.name }}</h4>
+                {{ d.description }}
+                {% if order %}
+                    <a class="btn btn-primary btn-block" href="{{ url_for('index.order', drink=d.doc_id) }}">Order</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}

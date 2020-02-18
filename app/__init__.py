@@ -63,22 +63,24 @@ def install_plugins(app):
                 ltext = 'No'
         return Markup(f'<span class="label label-{lcls}">{ltext}</span>')
 
-    def image(v, size=None):
+    def image(v, size=None, class_=''):
         if not v:
             return
         url = url_for('images.static', filename=v)
         style = ''
         if size == 'xs':
             style = 'max-width: 50px; max-height: 50px;'
-        return Markup(f'<img src="{url}" style="{style}" />')
+        return Markup(f'<img src="{url}" class="{class_}" style="{style}" />')
 
     app.jinja_env.filters['bool_label'] = bool_label
     app.jinja_env.filters['image'] = image
 
 def register_blueprints(app):
     from .views import (
+        index as index_view,
         admin as admin_view,
     )
+    app.register_blueprint(index_view.app, url_prefix=None)
     app.register_blueprint(admin_view.app, url_prefix='/admin')
 
     # Some extra bullshit
