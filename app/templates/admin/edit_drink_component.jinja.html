@@ -4,6 +4,7 @@
 {% block title %}Edit Drink Component{% endblock %}
 
 {% block content %}
+    {{ super() }}
     <div class="container">
         {{ wtf.quick_form(form) }}
     </div>
