@@ -10,6 +10,7 @@ class DrinkForm(HasImageMixin(), BaseForm):
     description = TextAreaField('Description')
     is_orderable = BooleanField('Is Orderable')
     has_strengths = BooleanField('Has Strengths')
+    has_mocktail = BooleanField('Can be made as a mocktail')
     in_stock = BooleanField('In Stock')
     image = FileField('Image')
 

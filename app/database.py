@@ -85,6 +85,7 @@ class Drink(HasImageMixin(), Model):
         description = fields.Str()
         is_orderable = fields.Boolean(default=True)
         has_strengths = fields.Boolean(default=True)
+        has_mocktail = fields.Boolean(default=False)
         in_stock = fields.Boolean(default=True)
         image = fields.Str()
 

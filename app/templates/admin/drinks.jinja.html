@@ -12,6 +12,7 @@
                     <th>Description</th>
                     <th>Is Orderable?</th>
                     <th>Has Strengths?</th>
+                    <th>Can be a mocktail?</th>
                     <th>In Stock?</th>
                     <th>&nbsp;</th>
                 </tr>
@@ -24,6 +25,7 @@
                         <td>{{ d.description }}</td>
                         <td>{{ d.is_orderable |bool_label }}</td>
                         <td>{{ d.has_strengths |bool_label }}</td>
+                        <td>{{ d.has_mocktail |bool_label }}</td>
                         <td>{{ d.in_stock |bool_label }}</td>
                         <td>
                             <form class="form-inline" method="POST" action="{{ url_for('.delete_drink', id=d.doc_id) }}">
