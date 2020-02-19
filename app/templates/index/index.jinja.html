@@ -11,9 +11,20 @@
         </div> #}
 
         <div class="row">
+            <h2>Drinks</h2>
             {% for d in drinks %}
-                {{ macros.render_drink(d) }}
+                {{ macros.render_drink(d, order=True) }}
             {% endfor %}
+        </div>
+
+        <div class="row">
+            <h2>Custom Drink</h2>
+            <form method="GET" action="{{ url_for('index.order') }}">
+                {% for d in drink_components %}
+                    {{ macros.render_drink(d, select=True) }}
+                {% endfor %}
+                <button class="btn btn-primary" type="submit">Order</button>
+            </form>
         </div>
     </div>
 {% endblock %}

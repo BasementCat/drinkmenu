@@ -21,7 +21,7 @@ def OrderForm(*args, drink=None, **kwargs):
         submit = SubmitField('Order')
 
         def validate_drink_name(form, field):
-            if hasattr(self, 'save_for_later') and self.save_for_later.data and not field.data:
+            if hasattr(form, 'save_for_later') and form.save_for_later.data and not field.data:
                 raise ValidationError("A drink name is required to save for later")
 
     return OrderFormImpl(*args, **kwargs)

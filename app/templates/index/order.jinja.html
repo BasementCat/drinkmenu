@@ -9,7 +9,11 @@
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                 <div class="row">
                     {% if drink %}
-                        {{ macros.render_drink(drink, cols=[12, 12, 12, 12], order=False) }}
+                        {{ macros.render_drink(drink, cols=[12, 12, 12, 12]) }}
+                    {% elif drink_components %}
+                        {% for c in drink_components %}
+                            {{ macros.render_drink(c, cols=[12, 12, 12, 12]) }}
+                        {% endfor %}
                     {% endif %}
                 </div>
             </div>
