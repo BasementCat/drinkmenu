@@ -1,5 +1,5 @@
 {% extends "base.jinja.html" %}
-{% import "macros.jinja.html" as macros %}
+{% import "macros.jinja.html" as macros with context %}
 
 {% block content %}
     {{ super() }}
@@ -8,6 +8,13 @@
             <h2>Drinks</h2>
             {% for d in drinks %}
                 {{ macros.render_drink(d, order=True) }}
+            {% endfor %}
+        </div>
+
+        <div class="row">
+            <h2>Saved Orders</h2>
+            {% for o in saved_orders %}
+                {{ macros.render_saved_order(o, order=True) }}
             {% endfor %}
         </div>
 

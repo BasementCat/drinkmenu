@@ -15,7 +15,7 @@ def OrderForm(*args, drink=None, **kwargs):
             if not drink or not drink.has_mocktail:
                 del _strengths['mocktail']
             strength = SelectField('Strength', choices=list(_strengths.items()), validators=[DataRequired()])
-        if not drink:
+        if not (drink or kwargs.get('drink_name')):
             save_for_later = BooleanField('Save this drink')
 
         submit = SubmitField('Order')

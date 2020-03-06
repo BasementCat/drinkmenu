@@ -43,7 +43,10 @@ class Model:
 
     @classmethod
     def all(cls):
-        return cls._get_table().all()
+        for res in cls._get_table().all():
+            o = cls()
+            o._load_self(res)
+            yield o
 
     @classmethod
     def get(cls, doc_id):

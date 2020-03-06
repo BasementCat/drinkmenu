@@ -1,21 +1,40 @@
-{% macro render_drink(d, cols=[4, 6, 12, 12], order=False, select=False) %}
+{% macro render_media(title, description='', img=None, cols=[4, 6, 12, 12]) %}
     <div class="col-lg-{{ cols[0] }} col-md-{{ cols[1] }} col-sm-{{ cols[2] }} col-xs-{{ cols[3] }}">
         <div class="media">
             <div class="media-left">
                 <a>
-                    {{ d.image |image(class_="media-object") }}
+                    {% if img %}
+                        {{ img |image(class_="media-object") }}
+                    {% endif %}
                 </a>
             </div>
             <div class="media-body">
-                <h4 class="media-heading">{{ d.name }}</h4>
-                {{ d.description }}
-                {% if order %}
-                    <a class="btn btn-primary btn-block" href="{{ url_for('index.order', d=d.doc_id) }}">Order</a>
-                {% endif %}
-                {% if select %}
-                    <label><input type="checkbox" name="c" value="{{ d.doc_id }}" /> Add to Drink</label>
-                {% endif %}
+                <h4 class="media-heading">{{ title }}</h4>
+                {{ description }}
+                {{ caller() }}
             </div>
         </div>
     </div>
+{% endmacro %}
+
+{% macro render_drink(d, cols=[4, 6, 12, 12], order=False, select=False) %}
+    {% call render_media(d.name, description=d.description, img=d.image, cols=cols) %}
+        {% if order %}
+            <a class="btn btn-primary btn-block" href="{{ url_for('index.order', d=d.doc_id) }}">Order</a>
+        {% endif %}
+        {% if select %}
+            <label><input type="checkbox" name="c" value="{{ d.doc_id }}" /> Add to Drink</label>
+        {% endif %}
+    {% endcall %}
+{% endmacro %}
+
+{% macro render_saved_order(o, cols=[4, 6, 12, 12], order=False) %}
+    {% call render_media(o.drink_name, cols=cols) %}
+        {% for c in get_components(o.drink_components) %}
+            {{ c.name }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+        {% if order %}
+            <a class="btn btn-primary btn-block" href="{{ url_for('index.order', s=o.doc_id) }}">Order</a>
+        {% endif %}
+    {% endcall %}
 {% endmacro %}
