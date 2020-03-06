@@ -104,13 +104,13 @@ STRENGTHS = {
 
 class Drink(HasImageMixin(), Model):
     class _schema(BaseSchema):
-        name = fields.Str()
-        description = fields.Str()
-        is_orderable = fields.Boolean(default=True)
-        has_strengths = fields.Boolean(default=True)
-        has_mocktail = fields.Boolean(default=False)
-        in_stock = fields.Boolean(default=True)
-        image = fields.Str()
+        name = fields.Str(missing=None)
+        description = fields.Str(missing=None)
+        is_orderable = fields.Boolean(default=True, missing=True)
+        has_strengths = fields.Boolean(default=True, missing=True)
+        has_mocktail = fields.Boolean(default=False, missing=False)
+        in_stock = fields.Boolean(default=True, missing=True)
+        image = fields.Str(missing=None)
 
 
 class DrinkComponent(HasImageMixin(), Model):
@@ -121,23 +121,23 @@ class DrinkComponent(HasImageMixin(), Model):
     }
 
     class _schema(BaseSchema):
-        name = fields.Str()
-        description = fields.Str()
-        type_ = fields.Str()
-        in_stock = fields.Boolean(default=True)
-        image = fields.Str()
+        name = fields.Str(missing=None)
+        description = fields.Str(missing=None)
+        type_ = fields.Str(missing=None)
+        in_stock = fields.Boolean(default=True, missing=True)
+        image = fields.Str(missing=None)
 
 
 class SavedOrder(Model):
     class _schema(BaseSchema):
-        drink_name = fields.Str()
-        drink_components = fields.List(fields.Integer())
+        drink_name = fields.Str(missing=None)
+        drink_components = fields.List(fields.Integer(), missing=lambda: [])
 
 
 class Order(Model):
     class _schema(BaseSchema):
-        name = fields.Str()
-        drink_name = fields.Str()
-        drink = fields.Integer()
-        drink_components = fields.List(fields.Integer())
-        strength = fields.Str()
+        name = fields.Str(missing=None)
+        drink_name = fields.Str(allow_none=True, missing=None)
+        drink = fields.Integer(missing=None)
+        drink_components = fields.List(fields.Integer(), missing=lambda: [])
+        strength = fields.Str(missing=None)

@@ -72,8 +72,19 @@ def install_plugins(app):
             style = 'max-width: 50px; max-height: 50px;'
         return Markup(f'<img src="{url}" class="{class_}" style="{style}" />')
 
+    def strength_label(v):
+        labels = {
+            'mocktail': ('default', 'Mocktail'),
+            'light': ('info', 'Light'),
+            'normal': ('success', 'Normal'),
+            'strong': ('warning', 'Strong'),
+        }
+        lcls, ltext = labels.get(v, ('danger', 'UNKNOWN'))
+        return Markup(f'<span class="label label-{lcls}">{ltext}</span>')
+
     app.jinja_env.filters['bool_label'] = bool_label
     app.jinja_env.filters['image'] = image
+    app.jinja_env.filters['strength_label'] = strength_label
 
 def register_blueprints(app):
     from .views import (

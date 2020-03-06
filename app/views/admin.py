@@ -6,12 +6,12 @@ from flask import (
     flash,
     # current_app,
     abort,
-    # request,
+    request,
     # session,
 )
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
-from app.database import Drink, DrinkComponent
+from app.database import Drink, DrinkComponent, Order, SavedOrder
 
 
 app = Blueprint('admin', __name__)
@@ -98,3 +98,41 @@ def delete_drink_component(id):
     drink_component.delete()
     flash("Deleted drink component " + drink_component.name, 'info')
     return redirect(url_for('.drink-components'))
+
+
+@app.route('/orders', methods=['GET'])
+def orders():
+    orders = Order.all()
+    saved_orders = SavedOrder.all()
+
+    def get_drink(id):
+        return Drink.get(id)
+
+    def get_components(ids):
+        return DrinkComponent.find(*ids)
+
+    return render_template('admin/orders.jinja.html', orders=orders, saved_orders=saved_orders, get_drink=get_drink, get_components=get_components)
+
+
+@app.route('/orders/complete/<int:id>', methods=['POST'])
+def complete_order(id):
+    order = Order.get(id)
+    if not order:
+        flash("No such order", 'danger')
+    else:
+        order.delete()
+        flash(f"Completed order {order.drink_name} for {order.name}", 'success')
+
+    return redirect(url_for('.orders'))
+
+
+@app.route('/orders/delete-saved/<int:id>', methods=['POST'])
+def delete_saved_order(id):
+    order = SavedOrder.get(id)
+    if not order:
+        flash("No such saved order", 'danger')
+    else:
+        order.delete()
+        flash(f"Deleted saved order {order.drink_name}", 'success')
+
+    return redirect(url_for('.orders'))

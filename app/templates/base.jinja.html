@@ -14,12 +14,19 @@
             <a class="navbar-brand" href="{{ '/' }}">{{ config.get('SITE_NAME') }}</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            {% if request.url_rule and request.url_rule.endpoint.startswith('admin.') %}
-                <ul class="nav navbar-nav">
-                    <li class="{{ 'active' if request.url_rule.endpoint == 'admin.index' else '' }}"><a href="{{ url_for('admin.index') }}">Admin</a></li>
-                    <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drinks' else '' }}"><a href="{{ url_for('admin.drinks') }}">Drinks</a></li>
-                    <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drink_components' else '' }}"><a href="{{ url_for('admin.drink_components') }}">Drink Components</a></li>
-                </ul>
+            {% if request.url_rule %}
+                {% if request.url_rule.endpoint.startswith('admin.') %}
+                    <ul class="nav navbar-nav">
+                        <li class="{{ 'active' if request.url_rule.endpoint == 'admin.index' else '' }}"><a href="{{ url_for('admin.index') }}">Admin</a></li>
+                        <li class="{{ 'active' if request.url_rule.endpoint == 'admin.orders' else '' }}"><a href="{{ url_for('admin.orders') }}">Orders</a></li>
+                        <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drinks' else '' }}"><a href="{{ url_for('admin.drinks') }}">Drinks</a></li>
+                        <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drink_components' else '' }}"><a href="{{ url_for('admin.drink_components') }}">Drink Components</a></li>
+                    </ul>
+                {% else %}
+                    <ul class="nav navbar-nav">
+                        <li class="{{ 'active' if request.url_rule.endpoint == 'index.index' else '' }}"><a href="{{ url_for('index.index') }}">Order</a></li>
+                    </ul>
+                {% endif %}
             {% endif %}
         </div><!--/.nav-collapse -->
     </div>
