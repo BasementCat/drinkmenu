@@ -110,7 +110,7 @@ def images(name):
         w, h = img.size
         sz = max(w, h)
         out = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
-        out.paste(img, (int((sz - w) / 2), int((sz - h) / 2)))
+        out.paste(img, (int((sz - w)), 0))
         out = out.resize((144, 144), PIL.Image.ANTIALIAS)
 
         with open(cached, 'wb') as fp:

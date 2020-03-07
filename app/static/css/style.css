@@ -14,3 +14,33 @@
 .media .media-object {
     max-width: 128px;
 }
+
+/* Hardcoding this for now... ideally, integrate w/ col- classes */
+.media-col {
+    margin-bottom: 3em;
+}
+@media (max-width: 992px) {
+    .media-col {
+        clear: left;
+    }
+}
+@media (min-width: 992px and max-width: 1199px) {
+    .media {
+        clear: none;
+    }
+    .media-col:nth-of-type(2n-1) {
+        clear: left;
+    }
+}
+@media (min-width: 1200px) {
+    .media {
+        clear: none;
+    }
+    .media-col:nth-of-type(3n-2) {
+        clear: left;
+    }
+}
+/*Extra small devices (phones, less than 768px): No media query since this is the default in Bootstrap
+Small devices (tablets, 768px and up): @media (min-width: @screen-sm-min) { ... }
+Medium devices (desktops, 992px and up): @media (min-width: @screen-md-min) { ... }
+Large devices (large desktops, 1200px and up): @media (min-width: @screen-lg-min) { ... }*/
