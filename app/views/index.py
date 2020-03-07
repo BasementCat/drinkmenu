@@ -1,5 +1,4 @@
 import os
-from io import BytesIO
 
 from flask import (
     Blueprint,
@@ -102,17 +101,19 @@ def order():
     return render_template('index/order.jinja.html', form=form, drink=drink, drink_components=drink_components)
 
 
-@app.route('/images/<path:path>', methods=['GET'])
-def images(path):
-    img = Image.open(os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', path)))
-    img = img.convert('RGBA')
-    w, h = img.size
-    sz = max(w, h)
-    out = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
-    out.paste(img, (int((sz - w) / 2), int((sz - h) / 2)))
-    out = out.resize((144, 144), PIL.Image.ANTIALIAS)
+@app.route('/images/<name>', methods=['GET'])
+def images(name):
+    cached = os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', 'resized', name))
+    if not os.path.exists(cached):
+        img = Image.open(os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', name)))
+        img = img.convert('RGBA')
+        w, h = img.size
+        sz = max(w, h)
+        out = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
+        out.paste(img, (int((sz - w) / 2), int((sz - h) / 2)))
+        out = out.resize((144, 144), PIL.Image.ANTIALIAS)
 
-    img_io = BytesIO()
-    out.save(img_io, 'PNG', quality=70)
-    img_io.seek(0)
-    return send_file(img_io, mimetype='image/png')
+        with open(cached, 'wb') as fp:
+            out.save(fp, 'PNG', quality=70)
+
+    return send_file(cached, mimetype='image/png')

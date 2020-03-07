@@ -47,7 +47,7 @@ def install_plugins(app):
     Bootstrap(app)
 
     # kinda related?
-    os.makedirs(os.path.join(app.config['DATA_DIRECTORY'], 'images'), exist_ok=True)
+    os.makedirs(os.path.join(app.config['DATA_DIRECTORY'], 'images', 'resized'), exist_ok=True)
 
     # Also this should be moved
     from markupsafe import Markup
@@ -66,7 +66,7 @@ def install_plugins(app):
     def image(v, size=None, class_=''):
         if not v:
             return
-        url = url_for('index.images', path=v)
+        url = url_for('index.images', name=v)
         style = ''
         if size == 'xs':
             style = 'max-width: 50px; max-height: 50px;'
