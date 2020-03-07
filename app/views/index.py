@@ -1,3 +1,6 @@
+import os
+from io import BytesIO
+
 from flask import (
     Blueprint,
     render_template,
@@ -6,7 +9,12 @@ from flask import (
     flash,
     redirect,
     url_for,
+    send_file,
+    current_app,
 )
+
+import PIL
+from PIL import Image
 
 from app.database import Drink, DrinkComponent, Order, SavedOrder
 from app.forms.orders import OrderForm
@@ -92,3 +100,18 @@ def order():
         return redirect(url_for('.index'))
 
     return render_template('index/order.jinja.html', form=form, drink=drink, drink_components=drink_components)
+
+
+@app.route('/images/<path:path>', methods=['GET'])
+def images(path):
+    img = Image.open(os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', path)))
+    w, h = img.size
+    sz = max(w, h)
+    out = Image.new('RGB', (sz, sz), (255, 255, 255))
+    out.paste(img, (int((sz - w) / 2), int((sz - h) / 2)))
+    out = out.resize((144, 144), PIL.Image.ANTIALIAS)
+
+    img_io = BytesIO()
+    out.save(img_io, 'JPEG', quality=70)
+    img_io.seek(0)
+    return send_file(img_io, mimetype='image/jpeg')

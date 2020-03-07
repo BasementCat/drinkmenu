@@ -66,7 +66,7 @@ def install_plugins(app):
     def image(v, size=None, class_=''):
         if not v:
             return
-        url = url_for('images.static', filename=v)
+        url = url_for('index.images', path=v)
         style = ''
         if size == 'xs':
             style = 'max-width: 50px; max-height: 50px;'
@@ -93,9 +93,6 @@ def register_blueprints(app):
     )
     app.register_blueprint(index_view.app, url_prefix=None)
     app.register_blueprint(admin_view.app, url_prefix='/admin')
-
-    # Some extra bullshit
-    app.register_blueprint(Blueprint('images', __name__, static_url_path='/images', static_folder=os.path.abspath(os.path.join(app.config['DATA_DIRECTORY'], 'images'))))
 
 
 def install_error_handlers(app):
