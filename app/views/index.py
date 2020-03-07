@@ -17,7 +17,6 @@ from PIL import Image
 
 from app.database import Drink, DrinkComponent, Order, SavedOrder
 from app.forms.orders import OrderForm
-from app.lib.printer import print_stuff
 
 
 app = Blueprint('index', __name__)
@@ -87,14 +86,6 @@ def order():
         order = Order(**params)
         order.save()
         flash("Your order has been placed", 'success')
-
-        strength = f' [{order.strength}]' if order.strength else ''
-        print_stuff(
-            name=order.name,
-            drink_name=(order.drink_name + strength) if order.drink_name else None,
-            drink=(drink.name + strength) if drink else None,
-            drink_components=', '.join((c.name for c in drink_components)) if drink_components else None
-        )
 
         return redirect(url_for('.index'))
 

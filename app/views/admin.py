@@ -12,6 +12,7 @@ from flask import (
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.database import Drink, DrinkComponent, Order, SavedOrder
+from app.lib.printer import print_stuff
 
 
 app = Blueprint('admin', __name__)
@@ -102,7 +103,8 @@ def delete_drink_component(id):
 
 @app.route('/orders', methods=['GET'])
 def orders():
-    orders = Order.all()
+    orders = Order.find(printed=False)
+    printed_orders = Order.find(printed=True)
     saved_orders = SavedOrder.all()
 
     def get_drink(id):
@@ -111,7 +113,39 @@ def orders():
     def get_components(ids):
         return DrinkComponent.find(*ids)
 
-    return render_template('admin/orders.jinja.html', orders=orders, saved_orders=saved_orders, get_drink=get_drink, get_components=get_components)
+    return render_template('admin/orders.jinja.html', printed_orders=printed_orders, orders=orders, saved_orders=saved_orders, get_drink=get_drink, get_components=get_components)
+
+
+@app.route('/orders/print/<int:id>', methods=['POST'])
+def print_order(id):
+    order = Order.get(id)
+    if not order:
+        flash("No such order", 'danger')
+    else:
+        drink = None
+        if order.drink:
+            drink = Drink.get(order.drink)
+
+        drink_components = None
+        if order.drink_components:
+            drink_components = DrinkComponent.find(*order.drink_components)
+
+        strength = f' [{order.strength}]' if order.strength else ''
+        res = print_stuff(
+            name=order.name,
+            drink_name=(order.drink_name + strength) if order.drink_name else None,
+            drink=(drink.name + strength) if drink else None,
+            drink_components=', '.join((c.name for c in drink_components)) if drink_components else None
+        )
+
+        if res:
+            flash(f"Printed order {order.drink_name} for {order.name}", 'success')
+            order.printed = True
+            order.save()
+        else:
+            flash(f"Failed to print order", 'danger')
+
+    return redirect(url_for('.orders'))
 
 
 @app.route('/orders/complete/<int:id>', methods=['POST'])

@@ -144,3 +144,4 @@ class Order(Model):
         drink = fields.Integer(missing=None)
         drink_components = fields.List(fields.Integer(), missing=lambda: [])
         strength = fields.Str(missing=None)
+        printed = fields.Boolean(default=False, missing=False)

@@ -44,7 +44,11 @@ def print_stuff(name=None, drink_name=None, drink=None, drink_components=None):
 
             if locals().get(item):
                 printer.text(locals()[item])
+
+        return True
     except KeyError as e:
         logger.error("Missing config key %s", str(e))
     except:
         logger.error("Error accessing printer", exc_info=True)
+
+    return False

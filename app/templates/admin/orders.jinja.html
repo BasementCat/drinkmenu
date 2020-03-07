@@ -5,47 +5,52 @@
 {% block content %}
     {{ super() }}
     <div class="container">
-        <div class="row">
-            <h2>Orders</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Drink Name</th>
-                        <th>Drink</th>
-                        <th>Drink Components</th>
-                        <th>Strength</th>
-                        <th>&nbsp;</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for o in orders %}
+        {% for title, src in (('Printed Orders', printed_orders), ('Orders', orders)) %}
+            <div class="row">
+                <h2>{{ title }}</h2>
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{{ o.name }}</td>
-                            <td>{{ o.drink_name or '' }}</td>
-                            <td>
-                                {% if o.drink %}
-                                    {{ get_drink(o.drink).name }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if o.drink_components %}
-                                    {% for c in get_components(o.drink_components) %}
-                                        {{ c.name }}{% if not loop.last %},{% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            </td>
-                            <td>{{ o.strength |strength_label }}</td>
-                            <td>
-                                <form class="form-inline" method="POST" action="{{ url_for('.complete_order', id=o.doc_id) }}">
-                                    <input type="submit" class="btn btn-danger btn-xs" value="Complete" />
-                                </form>
-                            </td>
+                            <th>Name</th>
+                            <th>Drink Name</th>
+                            <th>Drink</th>
+                            <th>Drink Components</th>
+                            <th>Strength</th>
+                            <th>&nbsp;</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for o in src %}
+                            <tr>
+                                <td>{{ o.name }}</td>
+                                <td>{{ o.drink_name or '' }}</td>
+                                <td>
+                                    {% if o.drink %}
+                                        {{ get_drink(o.drink).name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if o.drink_components %}
+                                        {% for c in get_components(o.drink_components) %}
+                                            {{ c.name }}{% if not loop.last %},{% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                                <td>{{ o.strength |strength_label }}</td>
+                                <td>
+                                    <form class="form-inline" method="POST" action="{{ url_for('.print_order', id=o.doc_id) }}">
+                                        <input type="submit" class="btn btn-primary btn-xs" value="Print" />
+                                    </form>
+                                    <form class="form-inline" method="POST" action="{{ url_for('.complete_order', id=o.doc_id) }}">
+                                        <input type="submit" class="btn btn-danger btn-xs" value="Complete" />
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
         <div class="row">
             <h2>Saved Orders</h2>
             <table class="table table-striped">
