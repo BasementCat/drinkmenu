@@ -10,6 +10,7 @@ from flask import (
 
 from app.database import Drink, DrinkComponent, Order, SavedOrder
 from app.forms.orders import OrderForm
+from app.lib.printer import print_stuff
 
 
 app = Blueprint('index', __name__)
@@ -39,6 +40,7 @@ def order():
     drink = None
     drink_components = None
     drink_name = None
+    order = None
 
     if request.args.get('d'):
         drink = Drink.get(int(request.args['d']))
@@ -73,10 +75,20 @@ def order():
             params['drink_components'] = [c.doc_id for c in drink_components]
         if not drink or drink.has_strengths:
             params['strength'] = form.strength.data
-        if not drink and form.save_for_later.data:
+        if not drink and hasattr(form, 'save_for_later') and form.save_for_later.data:
             SavedOrder(drink_name=params['drink_name'], drink_components=params['drink_components']).save()
-        Order(**params).save()
+        order = Order(**params)
+        order.save()
         flash("Your order has been placed", 'success')
+
+        strength = f' [{order.strength}]' if order.strength else ''
+        print_stuff(
+            name=order.name,
+            drink_name=(order.drink_name + strength) if order.drink_name else None,
+            drink=(drink.name + strength) if drink else None,
+            drink_components=', '.join((c.name for c in drink_components)) if drink_components else None
+        )
+
         return redirect(url_for('.index'))
 
     return render_template('index/order.jinja.html', form=form, drink=drink, drink_components=drink_components)

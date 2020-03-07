@@ -5,6 +5,8 @@ Flask-WTF
 marshmallow
 tinydb
 python-magic
+# PyESCPOS  # Requires libbluetooth-dev (debian-ish)
+git+https://github.com/fabianoengler/pyescpos.git  # Like above, but py3 support
 
 # arrow
 # pytz
