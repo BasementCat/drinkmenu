@@ -105,13 +105,14 @@ def order():
 @app.route('/images/<path:path>', methods=['GET'])
 def images(path):
     img = Image.open(os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', path)))
+    img = img.convert('RGBA')
     w, h = img.size
     sz = max(w, h)
-    out = Image.new('RGB', (sz, sz), (255, 255, 255))
+    out = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
     out.paste(img, (int((sz - w) / 2), int((sz - h) / 2)))
     out = out.resize((144, 144), PIL.Image.ANTIALIAS)
 
     img_io = BytesIO()
-    out.save(img_io, 'JPEG', quality=70)
+    out.save(img_io, 'PNG', quality=70)
     img_io.seek(0)
-    return send_file(img_io, mimetype='image/jpeg')
+    return send_file(img_io, mimetype='image/png')

@@ -7,7 +7,7 @@ tinydb
 python-magic
 # PyESCPOS  # Requires libbluetooth-dev (debian-ish)
 git+https://github.com/fabianoengler/pyescpos.git  # Like above, but py3 support
-pillow
+pillow  # Requires libopenjp2-7, libtiff5
 
 # arrow
 # pytz
