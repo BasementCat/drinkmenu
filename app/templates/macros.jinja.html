@@ -23,7 +23,7 @@
             <a class="btn btn-primary btn-block" href="{{ url_for('index.order', d=d.doc_id) }}">Order</a>
         {% endif %}
         {% if select %}
-            <label><input type="checkbox" name="c" value="{{ d.doc_id }}" /> Add to Drink</label>
+            <label class="btn btn-info btn-block"><input type="checkbox" name="c" value="{{ d.doc_id }}" /> Add to Drink</label>
         {% endif %}
     {% endcall %}
 {% endmacro %}
