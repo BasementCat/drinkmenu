@@ -103,6 +103,7 @@ STRENGTHS = {
     'normal': 'Normal',
     'strong': 'Strong',
 }
+DEFAULT_STRENGTH = 'normal'
 
 
 class Drink(HasImageMixin(), Model):

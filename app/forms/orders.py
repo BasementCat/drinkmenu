@@ -2,7 +2,7 @@ from wtforms import StringField, BooleanField, SubmitField, SelectField
 from wtforms.validators import DataRequired, ValidationError
 
 from . import BaseForm
-from app.database import STRENGTHS
+from app.database import STRENGTHS, DEFAULT_STRENGTH
 
 
 def OrderForm(*args, drink=None, **kwargs):
@@ -14,7 +14,7 @@ def OrderForm(*args, drink=None, **kwargs):
             _strengths = dict(STRENGTHS)
             if not drink or not drink.has_mocktail:
                 del _strengths['mocktail']
-            strength = SelectField('Strength', choices=list(_strengths.items()), validators=[DataRequired()])
+            strength = SelectField('Strength', choices=list(_strengths.items()), validators=[DataRequired()], default=DEFAULT_STRENGTH)
         if not (drink or kwargs.get('drink_name')):
             save_for_later = BooleanField('Save this drink')
 
