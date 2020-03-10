@@ -1,15 +1,38 @@
 import os
 import uuid
+import threading
 
 from flask import g, current_app
 
 from tinydb import TinyDB, Query
+from tinydb.storages import JSONStorage
+from tinydb.middlewares import Middleware
 
 from marshmallow import Schema, fields
 
+
+class ThreadingMiddleware(Middleware):
+    locks = {}
+
+    def __init__(self, name, storage_cls):
+        # Initialize the parent constructor
+        super().__init__(storage_cls)
+        self.name = name
+        self.locks.setdefault(self.name, threading.RLock())
+
+    def read(self):
+        with self.locks[self.name]:
+            return self.storage.read()
+
+    def write(self, data):
+        with self.locks[self.name]:
+            return self.storage.write(data)
+
+
 def db():
     if 'db' not in g:
-        g.db = TinyDB(os.path.join(current_app.config['DATA_DIRECTORY'], 'db.json'))
+        filename = os.path.join(current_app.config['DATA_DIRECTORY'], 'db.json')
+        g.db = TinyDB(filename, storage=ThreadingMiddleware(filename, JSONStorage))
     return g.db
 
 
