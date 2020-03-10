@@ -11,5 +11,7 @@
     "SITE_NAME": "Drink Menu",
 
     "ESCPOS_PRINTER_BT_ADDR": "1a:2b:3c:4d:5e:6f/1",
-    "ESCPOS_PRINTER_FMT": "lf,c,s2,name,s1,drink_name,drink,s0,drink_components,lf"
+    "ESCPOS_PRINTER_FMT": "lf,c,s2,name,s1,drink_name,drink,s0,drink_components,lf",
+
+    "API_URL": "http://localhost:5000/api"
 }

@@ -12,7 +12,7 @@ from flask import (
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.database import Drink, DrinkComponent, Order, SavedOrder
-from app.lib.printer import print_stuff
+from app.lib.printer import print_stuff, PrintError
 
 
 app = Blueprint('admin', __name__)
@@ -130,20 +130,19 @@ def print_order(id):
         if order.drink_components:
             drink_components = DrinkComponent.find(*order.drink_components)
 
-        strength = f' [{order.strength}]' if order.strength else ''
-        res = print_stuff(
-            name=order.name,
-            drink_name=(order.drink_name + strength) if order.drink_name else None,
-            drink=(drink.name + strength) if drink else None,
-            drink_components=', '.join((c.name for c in drink_components)) if drink_components else None
-        )
-
-        if res:
-            flash(f"Printed order {order.drink_name} for {order.name}", 'success')
-            order.printed = True
-            order.save()
+        try:
+            strength = f' [{order.strength}]' if order.strength else ''
+            print_stuff(
+                order.doc_id,
+                name=order.name,
+                drink_name=(order.drink_name + strength) if order.drink_name else None,
+                drink=(drink.name + strength) if drink else None,
+                drink_components=', '.join((c.name for c in drink_components)) if drink_components else None
+            )
+        except PrintError as e:
+            flash(str(e), 'danger')
         else:
-            flash(f"Failed to print order", 'danger')
+            flash(f"Queued order {order.drink_name} for {order.name} for printing", 'success')
 
     return redirect(url_for('.orders'))
 

@@ -17,6 +17,7 @@ def create_app(config_filename=None):
     load_config(app, config_filename)
     install_plugins(app)
     register_blueprints(app)
+    register_commands(app)
     install_error_handlers(app)
 
     return app
@@ -90,9 +91,18 @@ def register_blueprints(app):
     from .views import (
         index as index_view,
         admin as admin_view,
+        api as api_view,
     )
     app.register_blueprint(index_view.app, url_prefix=None)
     app.register_blueprint(admin_view.app, url_prefix='/admin')
+    app.register_blueprint(api_view.app, url_prefix='/api')
+
+
+def register_commands(app):
+    from app.commands import (
+        queue as queue_commands,
+    )
+    app.cli.add_command(queue_commands.commands)
 
 
 def install_error_handlers(app):
