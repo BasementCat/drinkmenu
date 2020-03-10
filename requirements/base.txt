@@ -1,0 +1,8 @@
+Flask
+Flask-Bootstrap
+Flask-WTF
+
+marshmallow
+tinydb
+python-magic
+pillow  # Requires libopenjp2-7, libtiff5
