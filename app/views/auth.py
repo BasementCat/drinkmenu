@@ -18,7 +18,10 @@ app = Blueprint('auth', __name__)
 def index(type_='user'):
     form = AuthForm()
     if form.validate_on_submit():
-        if login(type_, form.password.data):
+        login_ok, house_disabled = login(type_, form.password.data)
+        if login_ok:
+            if house_disabled:
+                flash("House device disabled", 'info')
             if type_ == 'admin':
                 return redirect(url_for('admin.index'))
             return redirect(url_for('index.index'))

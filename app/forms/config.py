@@ -1,4 +1,4 @@
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, BooleanField
 from wtforms.validators import Optional
 
 from . import BaseForm
@@ -11,6 +11,8 @@ def ConfigForm(*args, drink=None, **kwargs):
 
     for k in RuntimeConfig.get_fields():
         setattr(ConfigFormImpl, k, StringField(k, validators=[Optional()]))
+
+    ConfigFormImpl.house_device = BooleanField('Make House Device')
 
     ConfigFormImpl.submit = SubmitField('Save')
 

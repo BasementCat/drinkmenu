@@ -7,14 +7,14 @@ from flask import (
     # current_app,
     abort,
     request,
-    # session,
+    session,
 )
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.forms.config import ConfigForm
 from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig
 from app.lib.printer import print_stuff, PrintError
-from app.lib.auth import require_login
+from app.lib.auth import require_login, set_house_device
 
 
 app = Blueprint('admin', __name__)
@@ -188,13 +188,17 @@ def delete_saved_order(id):
 @require_login(admin=True)
 def config():
     c = RuntimeConfig.get_single()
-    form = ConfigForm(obj=c)
+    form = ConfigForm(obj=c, house_device=session.get('house_device'))
     if form.validate_on_submit():
         for k in RuntimeConfig.get_fields():
             f = getattr(form, k, None)
             if f:
                 setattr(c, k, f.data or None)
         c.save()
+
         flash("Configuration changes have been saved.", 'success')
+        if set_house_device(form.house_device.data):
+            flash("This device is configured as a house device - admin is logged out, names will not be saved", 'info')
+            return redirect(url_for('index.index'))
 
     return render_template('admin/config.jinja.html', form=form)

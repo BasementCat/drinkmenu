@@ -10,6 +10,7 @@ from flask import (
     url_for,
     send_file,
     current_app,
+    session,
 )
 
 import PIL
@@ -17,7 +18,7 @@ from PIL import Image
 
 from app.database import Drink, DrinkComponent, Order, SavedOrder
 from app.forms.orders import OrderForm
-from app.lib.auth import require_login
+from app.lib.auth import require_login, is_house_device
 
 
 app = Blueprint('index', __name__)
@@ -71,8 +72,13 @@ def order():
         if any((not c.in_stock for c in drink_components)):
             abort(400, "Some of your choices are not in stock")
 
-    form = OrderForm(drink=drink, drink_name=drink_name)
+    name = None
+    if not is_house_device():
+        name = session.get('saved_name')
+    form = OrderForm(drink=drink, drink_name=drink_name, name=name)
     if form.validate_on_submit():
+        if not is_house_device():
+            session['saved_name'] = form.name.data
         params = {
             'name': form.name.data,
         }
