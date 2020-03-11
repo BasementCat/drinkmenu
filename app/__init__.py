@@ -7,6 +7,7 @@ from flask import (
     flash,
     url_for,
     Blueprint,
+    session,
     )
 from flask_bootstrap import Bootstrap
 
@@ -42,6 +43,11 @@ def load_config(app, config_filename=None):
         raise RuntimeError("No config files could be loaded! (Tried {})".format(', '.join(candidates)))
 
     app.config.update(config)
+
+    if app.config.get('SESSION_PERMANENT'):
+        @app.before_request
+        def make_session_permanent():
+            session.permanent = True
 
 
 def install_plugins(app):
