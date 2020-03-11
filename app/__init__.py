@@ -92,10 +92,12 @@ def register_blueprints(app):
         index as index_view,
         admin as admin_view,
         api as api_view,
+        auth as auth_view,
     )
     app.register_blueprint(index_view.app, url_prefix=None)
     app.register_blueprint(admin_view.app, url_prefix='/admin')
     app.register_blueprint(api_view.app, url_prefix='/api')
+    app.register_blueprint(auth_view.app, url_prefix='/auth')
 
 
 def register_commands(app):

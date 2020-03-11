@@ -17,6 +17,7 @@ from PIL import Image
 
 from app.database import Drink, DrinkComponent, Order, SavedOrder
 from app.forms.orders import OrderForm
+from app.lib.auth import require_login
 
 
 app = Blueprint('index', __name__)
@@ -42,6 +43,7 @@ def index():
 
 
 @app.route('/order', methods=['GET', 'POST'])
+@require_login()
 def order():
     drink = None
     drink_components = None

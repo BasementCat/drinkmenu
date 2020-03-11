@@ -14,23 +14,27 @@ from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.forms.config import ConfigForm
 from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig
 from app.lib.printer import print_stuff, PrintError
+from app.lib.auth import require_login
 
 
 app = Blueprint('admin', __name__)
 
 
 @app.route('/', methods=['GET'])
+@require_login(admin=True)
 def index():
     return render_template('admin/index.jinja.html')
 
 
 @app.route('/drinks', methods=['GET'])
+@require_login(admin=True)
 def drinks():
     return render_template('admin/drinks.jinja.html', drinks=Drink.all())
 
 
 @app.route('/drinks/new', methods=['GET', 'POST'])
 @app.route('/drinks/<int:id>', methods=['GET', 'POST'])
+@require_login(admin=True)
 def edit_drink(id=None):
     drink = None
     is_new = True
@@ -54,6 +58,7 @@ def edit_drink(id=None):
 
 
 @app.route('/drinks/delete/<int:id>', methods=['POST'])
+@require_login(admin=True)
 def delete_drink(id):
     drink = Drink.get(id)
     if not drink:
@@ -64,12 +69,14 @@ def delete_drink(id):
 
 
 @app.route('/drink-components', methods=['GET'])
+@require_login(admin=True)
 def drink_components():
     return render_template('admin/drink_components.jinja.html', drink_components=DrinkComponent.all(), types=DrinkComponent.TYPES)
 
 
 @app.route('/drink-components/new', methods=['GET', 'POST'])
 @app.route('/drink-components/<int:id>', methods=['GET', 'POST'])
+@require_login(admin=True)
 def edit_drink_component(id=None):
     drink_component = None
     is_new = True
@@ -93,6 +100,7 @@ def edit_drink_component(id=None):
 
 
 @app.route('/drink-components/delete/<int:id>', methods=['POST'])
+@require_login(admin=True)
 def delete_drink_component(id):
     drink_component = DrinkComponent.get(id)
     if not drink_component:
@@ -103,6 +111,7 @@ def delete_drink_component(id):
 
 
 @app.route('/orders', methods=['GET'])
+@require_login(admin=True)
 def orders():
     orders = Order.find(printed=False)
     printed_orders = Order.find(printed=True)
@@ -118,6 +127,7 @@ def orders():
 
 
 @app.route('/orders/print/<int:id>', methods=['POST'])
+@require_login(admin=True)
 def print_order(id):
     order = Order.get(id)
     if not order:
@@ -149,6 +159,7 @@ def print_order(id):
 
 
 @app.route('/orders/complete/<int:id>', methods=['POST'])
+@require_login(admin=True)
 def complete_order(id):
     order = Order.get(id)
     if not order:
@@ -161,6 +172,7 @@ def complete_order(id):
 
 
 @app.route('/orders/delete-saved/<int:id>', methods=['POST'])
+@require_login(admin=True)
 def delete_saved_order(id):
     order = SavedOrder.get(id)
     if not order:
@@ -173,6 +185,7 @@ def delete_saved_order(id):
 
 
 @app.route('/config', methods=['GET', 'POST'])
+@require_login(admin=True)
 def config():
     c = RuntimeConfig.get_single()
     form = ConfigForm(obj=c)
