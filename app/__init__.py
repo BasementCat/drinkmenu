@@ -29,8 +29,8 @@ def load_config(app, config_filename=None):
     else:
         candidates = map(os.path.normpath, map(os.path.abspath, [
             './config.json',
-            os.path.expanduser('~/.config/conman/config.json'),
-            '/etc/conman/config.json',
+            os.path.expanduser('~/.config/drinkmenu/config.json'),
+            '/etc/drinkmenu/config.json',
         ]))
     config = None
     for filename in candidates:
