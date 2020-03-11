@@ -5,7 +5,10 @@ import click
 from flask.cli import AppGroup
 from flask import current_app
 
-import requests
+try:
+    import requests
+except ImportError:
+    pass
 
 from app.lib.printer import print_queue, PrintError
 
@@ -17,6 +20,11 @@ commands = AppGroup('queue')
 
 @commands.command('print')
 def run_print_queue():
+    try:
+        requests
+    except NameError:
+        raise RuntimeError("Requests is not installed")
+
     url = current_app.config['API_URL'] + '/print/job'
     while True:
         try:
