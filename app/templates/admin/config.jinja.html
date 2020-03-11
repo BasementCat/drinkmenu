@@ -1,0 +1,11 @@
+{% extends "base.jinja.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Configuration{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <div class="container">
+        {{ wtf.quick_form(form) }}
+    </div>
+{% endblock %}

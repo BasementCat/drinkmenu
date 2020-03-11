@@ -11,7 +11,8 @@ from flask import (
 )
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
-from app.database import Drink, DrinkComponent, Order, SavedOrder
+from app.forms.config import ConfigForm
+from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig
 from app.lib.printer import print_stuff, PrintError
 
 
@@ -169,3 +170,18 @@ def delete_saved_order(id):
         flash(f"Deleted saved order {order.drink_name}", 'success')
 
     return redirect(url_for('.orders'))
+
+
+@app.route('/config', methods=['GET', 'POST'])
+def config():
+    c = RuntimeConfig.get_single()
+    form = ConfigForm(obj=c)
+    if form.validate_on_submit():
+        for k in RuntimeConfig.get_fields():
+            f = getattr(form, k, None)
+            if f:
+                setattr(c, k, f.data or None)
+        c.save()
+        flash("Configuration changes have been saved.", 'success')
+
+    return render_template('admin/config.jinja.html', form=form)

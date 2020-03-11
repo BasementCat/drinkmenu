@@ -169,3 +169,22 @@ class Order(Model):
         drink_components = fields.List(fields.Integer(), missing=lambda: [])
         strength = fields.Str(missing=None)
         printed = fields.Boolean(default=False, missing=False)
+
+
+class RuntimeConfig(Model):
+    class _schema(BaseSchema):
+        user_pass = fields.Str(allow_none=True, missing=None)
+        admin_pass = fields.Str(allow_none=True, missing=None)
+
+    @classmethod
+    def get_fields(cls):
+        for k, v in cls._schema._declared_fields.items():
+            if isinstance(v, fields.Field):
+                yield k
+
+    @classmethod
+    def get_single(cls):
+        res = list(cls.all())
+        if res:
+            return res[0]
+        return cls()
