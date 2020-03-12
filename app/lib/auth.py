@@ -7,10 +7,10 @@ from app.database import RuntimeConfig
 
 def login(type_, password):
     house_disabled = False
-    c = RuntimeConfig.get_single()
-    p = getattr(c, type_ + '_pass', None)
-    if p:
-        if password == p:
+    config = RuntimeConfig.get_single()
+    check_password = getattr(config, type_ + '_pass', None)
+    if check_password:
+        if password == check_password:
             session['login_' + type_] = True
             if type_ == 'admin' and is_house_device():
                 house_disabled = True
@@ -37,10 +37,11 @@ def require_login(admin=False):
     def require_login_impl(callback):
         @functools.wraps(callback)
         def require_login_wrapper(*args, **kwargs):
-            if admin and not session.get('login_admin'):
+            config = RuntimeConfig.get_single()
+            if admin and config.admin_pass and not session.get('login_admin'):
                 flash("Admin login is required", 'danger')
                 return redirect(url_for('auth.index', type_='admin'))
-            if not (session.get('login_admin') or session.get('login_user')):
+            if config.user_pass and not (session.get('login_admin') or session.get('login_user')):
                 flash("Login is required", 'danger')
                 return redirect(url_for('auth.index', type_='user'))
             return callback(*args, **kwargs)
