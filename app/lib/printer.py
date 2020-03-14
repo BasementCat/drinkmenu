@@ -85,7 +85,7 @@ def clear_print_job(id):
     return out
 
 
-def print_queue(job):
+def get_printer():
     if not have_printer_imports:
         raise PrintError("Printer libraries are not installed")
 
@@ -95,9 +95,13 @@ def print_queue(job):
         printer = GenericESCPOS(conn)
         printer.init()
 
-        for fn in job['c']:
-            getattr(printer, fn['f'])(*fn['a'], **fn['ka'])
-
-        return job['u']
+        return printer
     except KeyError as e:
         raise PrintError(f"Missing config key {e}")
+
+
+def print_queue(printer, job):
+    for fn in job['c']:
+        getattr(printer, fn['f'])(*fn['a'], **fn['ka'])
+
+    return job['u']

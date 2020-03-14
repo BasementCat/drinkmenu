@@ -10,7 +10,7 @@ try:
 except ImportError:
     pass
 
-from app.lib.printer import print_queue, PrintError
+from app.lib.printer import get_printer, print_queue, PrintError
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ def run_print_queue():
         raise RuntimeError("Requests is not installed")
 
     url = current_app.config['API_URL'] + '/print/job'
+    printer = get_printer()
     while True:
         try:
             logger.debug("Get queued: %s", url)
@@ -40,7 +41,7 @@ def run_print_queue():
             try:
                 # Print the job, and tell the server it's done
                 logger.debug("Printing job: %s", job)
-                id = print_queue(job)
+                id = print_queue(printer, job)
             except:
                 logger.error("Failed to print", exc_info=True)
             else:
