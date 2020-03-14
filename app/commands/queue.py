@@ -14,6 +14,7 @@ from app.lib.printer import print_queue, PrintError
 
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
 
 commands = AppGroup('queue')
 

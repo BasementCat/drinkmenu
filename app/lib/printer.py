@@ -94,7 +94,7 @@ def print_queue(job):
         printer = GenericESCPOS(conn)
         printer.init()
 
-        for fn in job['q']:
+        for fn in job['c']:
             getattr(printer, fn['f'])(*fn['a'], **fn['ka'])
 
         return job['u']
