@@ -49,15 +49,14 @@ def print_job(id=None):
     if request.method == 'POST':
         if not id:
             abort(400, "An ID is required to clear")
-        if not clear_print_job(id):
+        doc_id = clear_print_job(id)
+        if not doc_id:
             abort(400, "The ID is invalid")
 
-        job = get_print_job()
-        if job:
-            order = Order.get(job['i'])
-            if order:
-                order.printed = True
-                order.save()
+        order = Order.get(doc_id)
+        if order:
+            order.printed = True
+            order.save()
         return "OK"
 
     elif id:

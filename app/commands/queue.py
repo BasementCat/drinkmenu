@@ -43,7 +43,7 @@ def run_print_queue():
                 id = print_queue(job)
             except:
                 logger.error("Failed to print", exc_info=True)
-            else
+            else:
                 try:
                     logger.debug("Inform api %s is done", id)
                     requests.post(url + '/' + id).raise_for_status()

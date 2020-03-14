@@ -77,11 +77,12 @@ def get_print_job():
 
 def clear_print_job(id):
     global print_job
+    out = False
     if print_job:
         if print_job['u'] == id:
+            out = print_job['i']
             print_job = None
-            return True
-    return False
+    return out
 
 
 def print_queue(job):
