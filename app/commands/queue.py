@@ -41,10 +41,14 @@ def run_print_queue():
                 # Print the job, and tell the server it's done
                 logger.debug("Printing job: %s", job)
                 id = print_queue(job)
-                logger.debug("Inform api %s is done", id)
-                requests.post(url + '/' + id)
-            except PrintError:
+            except:
                 logger.error("Failed to print", exc_info=True)
+            else
+                try:
+                    logger.debug("Inform api %s is done", id)
+                    requests.post(url + '/' + id).raise_for_status()
+                except:
+                    logger.error("Failed to notify api job is done", exc_info=True)
         except:
             logger.error("Failed to get the print job", exc_info=True)
             time.sleep(10)
