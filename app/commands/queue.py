@@ -28,6 +28,7 @@ def run_print_queue():
     url = current_app.config['API_URL'] + '/print/job'
     while True:
         try:
+            logger.debug("Get queued: %s", url)
             res = requests.get(url)
             res.raise_for_status()
             job = res.json()['result']
@@ -37,7 +38,9 @@ def run_print_queue():
 
             try:
                 # Print the job, and tell the server it's done
+                logger.debug("Printing job: %s", job)
                 id = print_queue(job)
+                logger.debug("Inform api %s is done", id)
                 requests.post(url + '/' + id)
             except PrintError:
                 logger.error("Failed to print", exc_info=True)
