@@ -169,6 +169,7 @@ class Drink(OrderableMixin, HasImageMixin(), Model):
         has_strengths = fields.Boolean(default=True, missing=True)
         has_mocktail = fields.Boolean(default=False, missing=False)
         in_stock = fields.Boolean(default=True, missing=True)
+        inventory_level = fields.Integer(default=None, missing=None)
         image = fields.Str(missing=None)
 
 

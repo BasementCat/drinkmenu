@@ -58,17 +58,26 @@ def install_plugins(app):
 
     # Also this should be moved
     from markupsafe import Markup
-    def bool_label(v):
+    def bool_label(v, num=None, **levels):
         lcls = 'default'
         ltext = 'None'
-        if v is not None:
+        ext_text = ''
+        if num is not None:
+            levels = sorted((x for x in levels.items()), key=lambda y: y[1], reverse=True)
+            for cls_, lev in levels:
+                if num >= lev:
+                    lcls = cls_
+                    break
+            ltext = 'Yes' if num else 'No'
+            ext_text = f' ({num})'
+        elif v is not None:
             if v:
                 lcls = 'success'
                 ltext = 'Yes'
             else:
                 lcls = 'danger'
                 ltext = 'No'
-        return Markup(f'<span class="label label-{lcls}">{ltext}</span>')
+        return Markup(f'<span class="label label-{lcls}">{ltext}{ext_text}</span>')
 
     def image(v, size=None, class_=''):
         if not v:

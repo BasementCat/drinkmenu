@@ -165,6 +165,13 @@ def complete_order(id):
     if not order:
         flash("No such order", 'danger')
     else:
+        if order.drink:
+            drink = Drink.get(order.drink)
+            if drink and drink.inventory_level is not None:
+                drink.inventory_level = max(0, drink.inventory_level - 1)
+                if drink.inventory_level == 0:
+                    drink.in_stock = False
+                drink.save()
         order.delete()
         flash(f"Completed order {order.drink_name} for {order.name}", 'success')
 

@@ -1,5 +1,5 @@
-from wtforms import StringField, TextAreaField, BooleanField, FileField, SubmitField, SelectField
-from wtforms.validators import DataRequired
+from wtforms import StringField, TextAreaField, BooleanField, FileField, SubmitField, SelectField, IntegerField
+from wtforms.validators import DataRequired, Optional
 
 from . import BaseForm, HasImageMixin
 from app.database import DrinkComponent
@@ -12,6 +12,7 @@ class DrinkForm(HasImageMixin(), BaseForm):
     has_strengths = BooleanField('Has Strengths')
     has_mocktail = BooleanField('Can be made as a mocktail')
     in_stock = BooleanField('In Stock')
+    inventory_level = IntegerField('Inventory Level', validators=[Optional()])
     image = FileField('Image')
 
     submit = SubmitField('Save')
