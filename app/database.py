@@ -58,18 +58,35 @@ class Model:
             cls._schema_instance = cls._schema()
         return cls._schema_instance
 
+    @classmethod
+    def _load_raw(cls, data):
+        o = cls()
+        o._load_self(data)
+        return o
+
     def _load_self(self, data):
         res = self._get_schema().load(data)
         self.doc_id = getattr(data, 'doc_id', None)
         for k, v in res.items():
             setattr(self, k, v)
 
+    @staticmethod
+    def _sorted_results(coll, sort_key):
+        if sort_key:
+            fn = sort_key if callable(sort_key) else lambda doc: getattr(doc, sort_key, 1)
+            yield from sorted(coll, key=fn)
+        else:
+            yield from coll
+
     @classmethod
-    def all(cls):
-        for res in cls._get_table().all():
-            o = cls()
-            o._load_self(res)
-            yield o
+    def all(cls, sort_key=None):
+        def _fetch():
+            for res in cls._get_table().all():
+                o = cls()
+                o._load_self(res)
+                yield o
+
+        yield from cls._sorted_results(_fetch(), sort_key)
 
     @classmethod
     def get(cls, doc_id):
@@ -81,18 +98,21 @@ class Model:
         return out
 
     @classmethod
-    def find(cls, *doc_ids, **filters):
-        if doc_ids:
-            return list(filter(None, (cls.get(i) for i in doc_ids)))
+    def find(cls, *doc_ids, sort_key=None, **filters):
+        def _fetch():
+            if doc_ids:
+                return list(filter(None, (cls.get(i) for i in doc_ids)))
 
-        query = Query()
-        conditions = []
-        for k, v in filters.items():
-            conditions.append(getattr(query, k) == v)
-        search = conditions.pop(0)
-        for cond in conditions:
-            search = search & cond
-        return cls._get_table().search(search)
+            query = Query()
+            conditions = []
+            for k, v in filters.items():
+                conditions.append(getattr(query, k) == v)
+            search = conditions.pop(0)
+            for cond in conditions:
+                search = search & cond
+            return list(map(cls._load_raw, cls._get_table().search(search)))
+
+        return list(cls._sorted_results(_fetch(), sort_key))
 
     def save(self):
         data = self._get_schema().dump(self)
@@ -119,6 +139,18 @@ def HasImageMixin(image_field_name='image'):
     return HasImageMixinImpl
 
 
+class OrderableMixin:
+    class _schema:
+        order = fields.Integer(default=10000, missing=10000)
+
+    @classmethod
+    def set_order(cls, order_by_id):
+        for doc in cls.all():
+            if doc.doc_id in order_by_id and doc.order != order_by_id[doc.doc_id]:
+                doc.order = order_by_id[doc.doc_id]
+                doc.save()
+
+
 # TODO: this probably doesn't belong here
 STRENGTHS = {
     'mocktail': 'Mocktail',
@@ -129,8 +161,8 @@ STRENGTHS = {
 DEFAULT_STRENGTH = 'normal'
 
 
-class Drink(HasImageMixin(), Model):
-    class _schema(BaseSchema):
+class Drink(OrderableMixin, HasImageMixin(), Model):
+    class _schema(OrderableMixin._schema, BaseSchema):
         name = fields.Str(missing=None)
         description = fields.Str(missing=None)
         is_orderable = fields.Boolean(default=True, missing=True)
@@ -140,14 +172,14 @@ class Drink(HasImageMixin(), Model):
         image = fields.Str(missing=None)
 
 
-class DrinkComponent(HasImageMixin(), Model):
+class DrinkComponent(OrderableMixin, HasImageMixin(), Model):
     TYPES = {
         'liquor': 'Liquor',
         'mixer': 'Mixer',
         'other': 'Other',
     }
 
-    class _schema(BaseSchema):
+    class _schema(OrderableMixin._schema, BaseSchema):
         name = fields.Str(missing=None)
         description = fields.Str(missing=None)
         type_ = fields.Str(missing=None)

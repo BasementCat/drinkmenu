@@ -26,9 +26,9 @@ app = Blueprint('index', __name__)
 
 @app.route('/', methods=['GET'])
 def index():
-    drinks = Drink.find(is_orderable=True, in_stock=True)
+    drinks = Drink.find(is_orderable=True, in_stock=True, sort_key='order')
     saved_orders = SavedOrder.all()
-    drink_components = DrinkComponent.find(in_stock=True)
+    drink_components = DrinkComponent.find(in_stock=True, sort_key='order')
 
     in_stock_drink_components = set([d.doc_id for d in drink_components])
     def _filter_saved(o):
@@ -38,7 +38,7 @@ def index():
     saved_orders = list(filter(_filter_saved, saved_orders))
 
     def get_components(ids):
-        return DrinkComponent.find(*ids)
+        return DrinkComponent.find(*ids, sort_key='order')
 
     return render_template('index/index.jinja.html', drinks=drinks, saved_orders=saved_orders, drink_components=drink_components, get_components=get_components)
 
@@ -62,9 +62,9 @@ def order():
         if not saved_order:
             abort(404, "No such saved order")
         drink_name = saved_order.drink_name
-        drink_components = DrinkComponent.find(*saved_order.drink_components)
+        drink_components = DrinkComponent.find(*saved_order.drink_components, sort_key='order')
     elif request.args.get('c'):
-        drink_components = DrinkComponent.find(*map(int, request.args.getlist('c')))
+        drink_components = DrinkComponent.find(*map(int, request.args.getlist('c')), sort_key='order')
 
     if drink_components:
         if len(drink_components) < len(request.args.getlist('c')):

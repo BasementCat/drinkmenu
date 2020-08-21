@@ -13,7 +13,8 @@ from flask import (
 )
 
 from app.lib.printer import get_print_job, clear_print_job, PrintError
-from app.database import Order
+from app.lib.auth import require_login
+from app.database import Order, Drink, DrinkComponent
 
 
 logger = logging.getLogger(__name__)
@@ -71,3 +72,17 @@ def print_job(id=None):
                 return res
             time.sleep(0.25)
         return None
+
+
+@app.route('/admin/reorder/<type_>', methods=['POST'])
+@require_login(admin=True)
+@json_response
+def admin_reorder_type(type_):
+    data = {int(k): int(v) for k, v in request.json.items()}
+    if type_ == 'drinks':
+        Drink.set_order(data)
+    elif type_ == 'drink-components':
+        DrinkComponent.set_order(data)
+    else:
+        abort(400, "Invalid type: " + str(type_))
+    return 'OK'

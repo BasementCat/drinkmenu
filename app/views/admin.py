@@ -29,7 +29,7 @@ def index():
 @app.route('/drinks', methods=['GET'])
 @require_login(admin=True)
 def drinks():
-    return render_template('admin/drinks.jinja.html', drinks=Drink.all())
+    return render_template('admin/drinks.jinja.html', drinks=Drink.all(sort_key='order'))
 
 
 @app.route('/drinks/new', methods=['GET', 'POST'])
@@ -71,7 +71,7 @@ def delete_drink(id):
 @app.route('/drink-components', methods=['GET'])
 @require_login(admin=True)
 def drink_components():
-    return render_template('admin/drink_components.jinja.html', drink_components=DrinkComponent.all(), types=DrinkComponent.TYPES)
+    return render_template('admin/drink_components.jinja.html', drink_components=DrinkComponent.all(sort_key='order'), types=DrinkComponent.TYPES)
 
 
 @app.route('/drink-components/new', methods=['GET', 'POST'])

@@ -16,9 +16,9 @@
                     <th>&nbsp;</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody data-sortable="true" data-sortable-type="drink-components">
                 {% for d in drink_components %}
-                    <tr>
+                    <tr data-id="{{ d.doc_id }}" data-order="{{ d.order }}">
                         <td>{{ d.image |image(size='xs') }}</td>
                         <td>{{ d.name }}</td>
                         <td>{{ d.description }}</td>
@@ -28,6 +28,7 @@
                             <form class="form-inline" method="POST" action="{{ url_for('.delete_drink_component', id=d.doc_id) }}">
                                 <a class="btn btn-primary btn-xs" href="{{ url_for('.edit_drink_component', id=d.doc_id) }}">Edit</a>
                                 <input type="submit" class="btn btn-danger btn-xs" value="Delete" />
+                                <i class="glyphicon glyphicon-move drag-handle"></i>
                             </form>
                         </td>
                     </tr>
