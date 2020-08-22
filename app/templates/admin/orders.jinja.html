@@ -14,7 +14,7 @@
                             <th>Name</th>
                             <th>Drink Name</th>
                             <th>Drink</th>
-                            <th>Drink Components</th>
+                            <th>Components/Description</th>
                             <th>Strength</th>
                             <th>&nbsp;</th>
                         </tr>
@@ -22,9 +22,9 @@
                     <tbody>
                         {% for o in src %}
                             <tr>
-                                <td>{{ o.name }}</td>
-                                <td>{{ o.drink_name or '' }}</td>
-                                <td>
+                                <td class="nowrap">{{ o.name }}</td>
+                                <td class="nowrap">{{ o.drink_name or '' }}</td>
+                                <td class="nowrap">
                                     {% if o.drink %}
                                         {{ get_drink(o.drink).name }}
                                     {% endif %}
@@ -34,15 +34,20 @@
                                         {% for c in get_components(o.drink_components) %}
                                             {{ c.name }}{% if not loop.last %},{% endif %}
                                         {% endfor %}
+                                    {% elif o.drink %}
+                                        {{ get_drink(o.drink).description }}
                                     {% endif %}
                                 </td>
-                                <td>{{ o.strength |strength_label }}</td>
-                                <td>
+                                <td class="nowrap">{{ o.strength |strength_label }}</td>
+                                <td class="nowrap">
                                     <form class="form-inline" method="POST" action="{{ url_for('.print_order', id=o.doc_id) }}">
-                                        <input type="submit" class="btn btn-primary btn-xs" value="Print" />
+                                        <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-print"></i> Print</button>
                                     </form>
                                     <form class="form-inline" method="POST" action="{{ url_for('.complete_order', id=o.doc_id) }}">
-                                        <input type="submit" class="btn btn-danger btn-xs" value="Complete" />
+                                        <button type="submit" class="btn btn-warning btn-xs"><i class="fa fa-check"></i> Complete</button>
+                                    </form>
+                                    <form class="form-inline" method="POST" action="{{ url_for('.delete_order', id=o.doc_id) }}">
+                                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete</button>
                                     </form>
                                 </td>
                             </tr>

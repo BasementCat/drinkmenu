@@ -178,6 +178,19 @@ def complete_order(id):
     return redirect(url_for('.orders'))
 
 
+@app.route('/orders/delete/<int:id>', methods=['POST'])
+@require_login(admin=True)
+def delete_order(id):
+    order = Order.get(id)
+    if not order:
+        flash("No such order", 'danger')
+    else:
+        order.delete()
+        flash(f"Deleted order {order.drink_name} for {order.name}", 'success')
+
+    return redirect(url_for('.orders'))
+
+
 @app.route('/orders/delete-saved/<int:id>', methods=['POST'])
 @require_login(admin=True)
 def delete_saved_order(id):

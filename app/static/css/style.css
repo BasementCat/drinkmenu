@@ -47,7 +47,12 @@ Large devices (large desktops, 1200px and up): @media (min-width: @screen-lg-min
 
 
 td .form-inline {
-    float: left;
-    clear: none;
-    margin-right: 1em;
+    /*float: left;
+    clear: none;*/
+    display: inline;
+    margin-right: 0.5em;
+}
+
+td.nowrap {
+    white-space: nowrap;
 }
