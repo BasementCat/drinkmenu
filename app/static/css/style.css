@@ -56,3 +56,17 @@ td .form-inline {
 td.nowrap {
     white-space: nowrap;
 }
+
+
+@keyframes refreshbar {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+.refresh-bar {
+    animation-name: refreshbar;
+    animation-timing-function: linear;
+}

@@ -2,6 +2,11 @@
 
 {% block title %}Orders{% endblock %}
 
+{% block scripts %}
+    {{ super() }}
+    <script>window.enable_autorefresh();</script>
+{% endblock %}
+
 {% block content %}
     {{ super() }}
     <div class="container">

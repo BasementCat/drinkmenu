@@ -169,4 +169,56 @@
                 req.send(JSON.stringify(order_by_id));
             });
     });
+
+
+    window.enable_autorefresh = function(delay) {
+        delay = delay || 15000;
+
+        let timeout = null, bar = null, bar_interval = null;
+
+        let install_bar = function() {
+            let container = document.createElement('div');
+            container.classList.add('progress');
+            bar = document.createElement('div');
+            bar.classList.add('progress-bar');
+            bar.classList.add('refresh-bar');
+            bar.setAttribute('role', 'progressbar');
+            bar.style.width = '100%';
+
+            bar.style.animationDuration = delay + 'ms';
+
+            container.appendChild(bar);
+            document.querySelector('body>.container').prepend(container);
+        };
+
+        let refresh = function() {
+            window.location.reload();
+        };
+
+        let reset_timeout = function() {
+            if (timeout) window.clearTimeout(timeout);
+            timeout = window.setTimeout(refresh, delay);
+
+            bar.classList.remove('refresh-bar');
+            void bar.offsetWidth;
+            bar.classList.add('refresh-bar');
+            bar.innerText = Math.floor(delay / 1000) + 's';
+
+            if (bar_interval) window.clearInterval(bar_interval);
+            bar_interval = window.setInterval(function() { bar.innerText = (parseInt(bar.innerText.replace('/s$/', '')) - 1) + 's'; }, 1000);
+        };
+
+        document.addEventListener("mousemove", reset_timeout, false);
+        document.addEventListener("mousedown", reset_timeout, false);
+        document.addEventListener("keydown", reset_timeout, false);
+        document.addEventListener("touchmove", reset_timeout, false);
+        document.addEventListener("scroll", reset_timeout, false);
+
+        // // TODO: debounce
+
+
+        install_bar();
+        reset_timeout();
+
+    };
 })();
