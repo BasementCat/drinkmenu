@@ -22,6 +22,7 @@
                         <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drinks' else '' }}"><a href="{{ url_for('admin.drinks') }}">Drinks</a></li>
                         <li class="{{ 'active' if request.url_rule.endpoint == 'admin.drink_components' else '' }}"><a href="{{ url_for('admin.drink_components') }}">Drink Components</a></li>
                         <li class="{{ 'active' if request.url_rule.endpoint == 'admin.config' else '' }}"><a href="{{ url_for('admin.config') }}">Configuration</a></li>
+                        <li class="{{ 'active' if request.url_rule.endpoint == 'admin.stats' else '' }}"><a href="{{ url_for('admin.stats') }}">Stats</a></li>
                     </ul>
                 {% else %}
                     <ul class="nav navbar-nav">

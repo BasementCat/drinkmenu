@@ -12,7 +12,7 @@ from flask import (
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.forms.config import ConfigForm
-from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig
+from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig, OrderStat
 from app.lib.printer import print_stuff, PrintError
 from app.lib.auth import require_login, set_house_device
 
@@ -123,7 +123,15 @@ def orders():
     def get_components(ids):
         return DrinkComponent.find(*ids)
 
-    return render_template('admin/orders.jinja.html', printed_orders=printed_orders, orders=orders, saved_orders=saved_orders, get_drink=get_drink, get_components=get_components)
+    return render_template(
+        'admin/orders.jinja.html',
+        printed_orders=printed_orders,
+        orders=orders,
+        saved_orders=saved_orders,
+        get_drink=get_drink,
+        get_components=get_components,
+        total_orders=len(list(OrderStat.all())),
+    )
 
 
 @app.route('/orders/print/<int:id>', methods=['POST'])
@@ -172,6 +180,8 @@ def complete_order(id):
                 if drink.inventory_level == 0:
                     drink.in_stock = False
                 drink.save()
+
+        OrderStat.from_order(order)
         order.delete()
         flash(f"Completed order {order.drink_name} for {order.name}", 'success')
 
@@ -222,3 +232,34 @@ def config():
             return redirect(url_for('index.index'))
 
     return render_template('admin/config.jinja.html', form=form)
+
+
+
+@app.route('/stats', methods=['GET'])
+@require_login(admin=True)
+def stats():
+    est_oz = {
+        'mocktail': 0,
+        'light': 1,
+        'normal': 2,
+        'strong': 3,
+    }
+    stats = {'drinks': {}, 'strengths': {}, 'count': 0, 'total_oz': 0}
+
+    for stat in OrderStat.all():
+        if stat.drink:
+            drink = Drink.get(stat.drink)
+            if drink:
+                stats['drinks'].setdefault(drink.name, 0)
+                stats['drinks'][drink.name] += 1
+
+        stats['strengths'].setdefault(stat.strength, 0)
+        stats['strengths'][stat.strength] += 1
+
+        stats['count'] += 1
+        stats['total_oz'] += est_oz.get(stat.strength, 0)
+
+    stats['drinks'] = sorted(stats['drinks'].items(), key=lambda v: v[1], reverse=True)
+    stats['strengths'] = sorted(stats['strengths'].items(), key=lambda v: v[1], reverse=True)
+
+    return render_template('admin/stats.jinja.html', stats=stats, totals=[('Total Count', 'count'), ('Total oz of Liquor', 'total_oz')])

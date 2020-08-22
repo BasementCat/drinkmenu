@@ -221,3 +221,15 @@ class RuntimeConfig(Model):
         if res:
             return res[0]
         return cls()
+
+
+class OrderStat(Model):
+    class _schema(BaseSchema):
+        drink = fields.Integer(missing=None)
+        drink_components = fields.List(fields.Integer(), missing=lambda: [])
+        strength = fields.Str(missing=None)
+
+    @classmethod
+    def from_order(cls, order):
+        o = cls(drink=order.drink, drink_components=order.drink_components[:], strength=order.strength)
+        o.save()

@@ -1,0 +1,64 @@
+{% extends "base.jinja.html" %}
+
+{% block title %}Stats{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <!-- stats = {'drinks': {}, 'strengths': {}, 'count': 0, 'total_oz': 0} -->
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <h2>Drinks</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Drink Name</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for name, count in stats.drinks %}
+                            <tr>
+                                <td>{{ name }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <h2>Strengths</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Strength</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for name, count in stats.strengths %}
+                            <tr>
+                                <td>{{ name }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <h2>Totals</h2>
+                <table class="table table-striped">
+                    {% for title, key in totals %}
+                        <tr>
+                            <th>{{ title }}</th>
+                            <td>{{ stats[key] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
