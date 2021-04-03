@@ -1,6 +1,7 @@
 import os
 import uuid
 import threading
+import datetime
 
 from flask import g, current_app
 
@@ -192,6 +193,25 @@ class SavedOrder(Model):
     class _schema(BaseSchema):
         drink_name = fields.Str(missing=None)
         drink_components = fields.List(fields.Integer(), missing=lambda: [])
+
+
+class Event(Model):
+    class _schema(BaseSchema):
+        name = fields.Str(missing=None)
+        date = fields.DateTime(missing=datetime.datetime.utcnow)
+        is_current = fields.Boolean(default=False, missing=False)
+
+    @classmethod
+    def get_current(cls):
+        res = cls.find(sort_key='date', is_current=True)
+        if res:
+            return res[-1]
+
+    @classmethod
+    def get_current_id(cls):
+        res = cls.get_current()
+        if res:
+            return res.doc_id
 
 
 class Order(Model):

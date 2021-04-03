@@ -12,7 +12,7 @@ from flask import (
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.forms.config import ConfigForm
-from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig, OrderStat
+from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig, OrderStat, Event
 from app.lib.printer import print_stuff, PrintError
 from app.lib.auth import require_login, set_house_device
 
@@ -225,6 +225,17 @@ def config():
             if f:
                 setattr(c, k, f.data or None)
         c.save()
+
+        if form.new_event.data:
+            for e in Event.find(is_current=True):
+                e.is_current = False
+                e.save()
+            e = Event(name=form.new_event.data, date=str(datetime.datetime.utcnow()), is_current=True)
+            e.save()
+            flash(f'Created new event "{e.name}"', 'info')
+            # The form must be recreated so that we can reload the current event, and clear out the new event field
+            form = ConfigForm(obj=c, house_device=session.get('house_device'))
+            form.new_event.data = ''
 
         flash("Configuration changes have been saved.", 'success')
         if set_house_device(form.house_device.data):
