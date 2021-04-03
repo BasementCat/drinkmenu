@@ -216,6 +216,7 @@ class Event(Model):
 
 class Order(Model):
     class _schema(BaseSchema):
+        event = fields.Integer(missing=None)
         name = fields.Str(missing=None)
         drink_name = fields.Str(allow_none=True, missing=None)
         drink = fields.Integer(missing=None)
@@ -245,11 +246,12 @@ class RuntimeConfig(Model):
 
 class OrderStat(Model):
     class _schema(BaseSchema):
+        event = fields.Integer(missing=None)
         drink = fields.Integer(missing=None)
         drink_components = fields.List(fields.Integer(), missing=lambda: [])
         strength = fields.Str(missing=None)
 
     @classmethod
     def from_order(cls, order):
-        o = cls(drink=order.drink, drink_components=order.drink_components[:], strength=order.strength)
+        o = cls(event=Event.get_current_id(), drink=order.drink, drink_components=order.drink_components[:], strength=order.strength)
         o.save()

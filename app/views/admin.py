@@ -1,3 +1,6 @@
+import datetime
+from collections import namedtuple
+
 from flask import (
     Blueprint,
     render_template,
@@ -130,7 +133,8 @@ def orders():
         saved_orders=saved_orders,
         get_drink=get_drink,
         get_components=get_components,
-        total_orders=len(list(OrderStat.all())),
+        total_orders_ev=len(list(OrderStat.find(event=Event.get_current_id()))),
+        total_orders_all=len(list(OrderStat.all())),
     )
 
 
@@ -249,28 +253,58 @@ def config():
 @app.route('/stats', methods=['GET'])
 @require_login(admin=True)
 def stats():
+    fake_event = namedtuple('FakeEvent', ('doc_id', 'name', 'is_current'))
+    events = list(reversed(list(Event.all(sort_key='date'))))
+    valid_events = [e.doc_id for e in events]
+    events = [
+        fake_event(-1, "UNKNOWN", False),
+        fake_event(0, "NONE", False),
+    ] + events
+    try:
+        selected_event = int(request.args['event'])
+    except:
+        try:
+            selected_event = Event.get_current().doc_id
+        except:
+            selected_event = 0
+
     est_oz = {
         'mocktail': 0,
         'light': 1,
         'normal': 2,
         'strong': 3,
     }
-    stats = {'drinks': {}, 'strengths': {}, 'count': 0, 'total_oz': 0}
+    stats_ev = {'drinks': {}, 'strengths': {}, 'count': 0, 'total_oz': 0}
+    stats_all = {'drinks': {}, 'strengths': {}, 'count': 0, 'total_oz': 0}
 
-    for stat in OrderStat.all():
+    def add_stat(dest, stat):
         if stat.drink:
             drink = Drink.get(stat.drink)
             if drink:
-                stats['drinks'].setdefault(drink.name, 0)
-                stats['drinks'][drink.name] += 1
+                dest['drinks'].setdefault(drink.name, 0)
+                dest['drinks'][drink.name] += 1
 
-        stats['strengths'].setdefault(stat.strength, 0)
-        stats['strengths'][stat.strength] += 1
+        dest['strengths'].setdefault(stat.strength, 0)
+        dest['strengths'][stat.strength] += 1
 
-        stats['count'] += 1
-        stats['total_oz'] += est_oz.get(stat.strength, 0)
+        dest['count'] += 1
+        dest['total_oz'] += est_oz.get(stat.strength, 2)
 
-    stats['drinks'] = sorted(stats['drinks'].items(), key=lambda v: v[1], reverse=True)
-    stats['strengths'] = sorted(stats['strengths'].items(), key=lambda v: v[1], reverse=True)
+    for stat in OrderStat.all():
+        if (selected_event == 0 and not stat.event) or stat.event == selected_event or (selected_event == -1 and stat.event not in valid_events):
+            add_stat(stats_ev, stat)
+        add_stat(stats_all, stat)
 
-    return render_template('admin/stats.jinja.html', stats=stats, totals=[('Total Count', 'count'), ('Total oz of Liquor', 'total_oz')])
+    for dest in (stats_ev, stats_all):
+        dest['drinks'] = sorted(dest['drinks'].items(), key=lambda v: v[1], reverse=True)
+        dest['strengths'] = sorted(dest['strengths'].items(), key=lambda v: v[1], reverse=True)
+
+
+    return render_template(
+        'admin/stats.jinja.html',
+        events=events,
+        selected_event=selected_event,
+        stats_ev=stats_ev,
+        stats_all=stats_all,
+        totals=[('Total Count', 'count'), ('Total oz of Liquor', 'total_oz')]
+    )

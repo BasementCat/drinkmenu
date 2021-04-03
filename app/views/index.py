@@ -16,7 +16,7 @@ from flask import (
 import PIL
 from PIL import Image
 
-from app.database import Drink, DrinkComponent, Order, SavedOrder
+from app.database import Drink, DrinkComponent, Order, SavedOrder, Event
 from app.forms.orders import OrderForm
 from app.lib.auth import require_login, is_house_device
 
@@ -91,7 +91,7 @@ def order():
             params['strength'] = form.strength.data
         if not drink and hasattr(form, 'save_for_later') and form.save_for_later.data:
             SavedOrder(drink_name=params['drink_name'], drink_components=params['drink_components']).save()
-        order = Order(**params)
+        order = Order(event=Event.get_current_id(), **params)
         order.save()
         flash("Your order has been placed", 'success')
 

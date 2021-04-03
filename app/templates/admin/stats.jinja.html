@@ -7,58 +7,88 @@
     <!-- stats = {'drinks': {}, 'strengths': {}, 'count': 0, 'total_oz': 0} -->
     <div class="container">
         <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <h2>Drinks</h2>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Drink Name</th>
-                            <th>Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for name, count in stats.drinks %}
-                            <tr>
-                                <td>{{ name }}</td>
-                                <td>{{ count }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <form method="GET" id="event-stats-form">
+                    <div class="form-group">
+                        <label class="control-label" for="event">Stats For Event:</label>
+                        <select class="form-control" id="event" name="event" onchange="document.getElementById('event-stats-form').submit();">
+                            {% for e in events %}
+                                <option value="{{ e.doc_id }}" {{ 'selected' if selected_event == e.doc_id else '' }}>
+                                    {{ e.name }}
+                                    {% if e.is_current %} [Current]{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <h2>Strengths</h2>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Strength</th>
-                            <th>Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for name, count in stats.strengths %}
-                            <tr>
-                                <td>{{ name }}</td>
-                                <td>{{ count }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <h2>Totals</h2>
-                <table class="table table-striped">
-                    {% for title, key in totals %}
-                        <tr>
-                            <th>{{ title }}</th>
-                            <td>{{ stats[key] }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        </div>
+        {% for ttl, stats in (('Selected Event', stats_ev), ('All Time', stats_all)) %}
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <h2>{{ ttl }}</h2>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <h3>Drinks</h3>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Drink Name</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for name, count in stats.drinks %}
+                                        <tr>
+                                            <td>{{ name }}</td>
+                                            <td>{{ count }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <h3>Strengths</h3>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Strength</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for name, count in stats.strengths %}
+                                        <tr>
+                                            <td>{{ name }}</td>
+                                            <td>{{ count }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <h3>Totals</h3>
+                            <table class="table table-striped">
+                                {% for title, key in totals %}
+                                    <tr>
+                                        <th>{{ title }}</th>
+                                        <td>{{ stats[key] }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        {% endfor %}
     </div>
 {% endblock %}
