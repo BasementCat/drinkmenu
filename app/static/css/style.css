@@ -1,3 +1,39 @@
+.drinklist .sectiontitle {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+.drinklist .sectiontitle h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    background: white;
+}
+.drinklist .row-fluid {
+    margin-bottom: 3em;
+}
+
+.drink-items {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 2em;
+}
+.drink-item {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 144px 1fr;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    column-gap: 1em;
+}
+.drink-item .drink-info {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 .image-button {
     text-align: center;
 }
@@ -11,39 +47,42 @@
     font-weight: bold;
 }
 
-.media .media-object {
-    max-width: 128px;
-}
 
-/* Hardcoding this for now... ideally, integrate w/ col- classes */
-.media-col {
-    margin-bottom: 3em;
-}
-@media (max-width: 992px) {
-    .media-col {
-        clear: left;
-    }
-}
-@media (min-width: 992px and max-width: 1199px) {
-    .media {
-        clear: none;
-    }
-    .media-col:nth-of-type(2n-1) {
-        clear: left;
-    }
-}
-@media (min-width: 1200px) {
-    .media {
-        clear: none;
-    }
-    .media-col:nth-of-type(3n-2) {
-        clear: left;
-    }
-}
+/* Media queries */
 /*Extra small devices (phones, less than 768px): No media query since this is the default in Bootstrap
 Small devices (tablets, 768px and up): @media (min-width: @screen-sm-min) { ... }
 Medium devices (desktops, 992px and up): @media (min-width: @screen-md-min) { ... }
 Large devices (large desktops, 1200px and up): @media (min-width: @screen-lg-min) { ... }*/
+@media (min-width: 576px) {
+}
+@media (min-width: 768px) {
+    .drink-items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (min-width: 992px) {
+    .drinklist .sectiontitle h2 {
+        text-align: right;
+    }
+}
+@media (min-width: 1200px) {
+    .drink-items {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (min-width: 1400px) {
+}
+@media (min-width: 1700px) {
+    .drink-items {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+@media (min-width: 2000px) {
+    .drink-items {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
 
 
 td .form-inline {

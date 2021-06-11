@@ -1,18 +1,14 @@
 {% macro render_media(title, description='', img=None, cols=[4, 6, 12, 12]) %}
-    <div class="media-col col-lg-{{ cols[0] }} col-md-{{ cols[1] }} col-sm-{{ cols[2] }} col-xs-{{ cols[3] }}">
-        <div class="media">
-            <div class="media-left">
-                <a>
-                    {% if img %}
-                        {{ img |image(class_="media-object") }}
-                    {% endif %}
-                </a>
-            </div>
-            <div class="media-body">
-                <h4 class="media-heading">{{ title }}</h4>
-                {{ description }}
-                {{ caller() }}
-            </div>
+    <div class="drink-item">
+        <div class="drink-image">
+            {% if img %}
+                {{ img |image(class_="media-object") }}
+            {% endif %}
+        </div>
+        <div class="drink-info">
+            <h4 class="drink-title">{{ title }}</h4>
+            <p class="drink-desc">{{ description }}</p>
+            <div class="drink-action">{{ caller() }}</div>
         </div>
     </div>
 {% endmacro %}
