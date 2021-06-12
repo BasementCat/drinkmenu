@@ -221,4 +221,10 @@
         reset_timeout();
 
     };
+
+    $('.order-form form').on('submit', function(e) {
+        $('.order-form [type=submit]')
+            .attr('disabled', 'disabled')
+            .val('Please Wait');
+    });
 })();
