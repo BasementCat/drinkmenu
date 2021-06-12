@@ -3,12 +3,14 @@ import re
 import time
 import uuid
 import os
+import tempfile
 
-from flask import current_app
+from flask import current_app, url_for
 
 have_printer_imports = False
 try:
     from escpos import printer
+    import requests
     have_printer_imports = True
 except ImportError:
     pass
@@ -69,8 +71,15 @@ def get_order_printable(order):
         drink_components = DrinkComponent.find(*order.drink_components)
 
     strength = f' [{order.strength}]' if order.strength else ''
+
+    c = RuntimeConfig.get_single()
+    logo = None
+    if c.logo:
+        logo = url_for('index.images', name=c.logo, _external=True)
+
     return {
         'id': order.doc_id,
+        'logo': logo,
         'name': order.name,
         'drink_name': (order.drink_name + strength) if order.drink_name else None,
         'drink': (drink.name + strength) if drink else None,
@@ -91,16 +100,27 @@ def clear_queued_order(order=None, order_id=None):
     return order.doc_id
 
 
+logo_cache = {}
+
+
 def print_order(printer, data):
+    if data.get('logo') and data['logo'] not in logo_cache:
+        fname = os.path.join(tempfile.gettempdir(), data['logo'].split('/')[-1])
+        res = requests.get(data['logo'], stream=True)
+        res.raise_for_status()
+        with open(fname, 'wb') as fp:
+            for chunk in res.iter_content(chunk_size=1024):
+                fp.write(chunk)
+        logo_cache[data['logo']] = fname
+
     for c in current_app.config.get('ESCPOS_PRINTER_FMT', []):
         if c['command'] == 'text':
             printer.text(c['value'])
         elif c['command'] == 'logo':
             if current_app.config.get('ESCPOS_PRINTER_IMAGE_IMPL'):
-                c = RuntimeConfig.get_single()
-                if c.logo:
+                if data.get('logo'):
                     printer.image(
-                        os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', c.logo)),
+                        logo_cache[data['logo']],
                         impl=current_app.config['ESCPOS_PRINTER_IMAGE_IMPL']
                     )
         elif c['command'] == 'font':
