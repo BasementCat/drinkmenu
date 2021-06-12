@@ -117,18 +117,25 @@ def order():
 
 
 @app.route('/images/<name>', methods=['GET'])
-def images(name):
-    cached = os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', 'resized', name))
-    if not os.path.exists(cached):
-        img = Image.open(os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', name)))
-        img = img.convert('RGBA')
-        w, h = img.size
-        sz = max(w, h)
-        out = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
-        out.paste(img, (int((sz - w)), 0))
-        out = out.resize((144, 144), PIL.Image.ANTIALIAS)
+@app.route('/images/<any(full):mode>/<name>', methods=['GET'])
+def images(name, mode=None):
+    outfile = None
+    orig = os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', name))
+    if mode == 'full':
+        outfile = orig
+    else:
+        cached = os.path.abspath(os.path.join(current_app.config['DATA_DIRECTORY'], 'images', 'resized', name))
+        if not os.path.exists(cached):
+            img = Image.open(orig)
+            img = img.convert('RGBA')
+            w, h = img.size
+            sz = max(w, h)
+            out = Image.new('RGBA', (sz, sz), (0, 0, 0, 0))
+            out.paste(img, (int((sz - w)), 0))
+            out = out.resize((144, 144), PIL.Image.ANTIALIAS)
 
-        with open(cached, 'wb') as fp:
-            out.save(fp, 'PNG', quality=70)
+            with open(cached, 'wb') as fp:
+                out.save(fp, 'PNG', quality=70)
+        outfile = cached
 
-    return send_file(cached, mimetype='image/png')
+    return send_file(outfile, mimetype='image/png')

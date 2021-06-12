@@ -75,7 +75,7 @@ def get_order_printable(order):
     c = RuntimeConfig.get_single()
     logo = None
     if c.logo:
-        logo = url_for('index.images', name=c.logo, _external=True)
+        logo = url_for('index.images', name=c.logo, mode='full', _external=True)
 
     return {
         'id': order.doc_id,

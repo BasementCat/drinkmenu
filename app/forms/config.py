@@ -29,7 +29,7 @@ def ConfigForm(*args, drink=None, **kwargs):
     logo_desc = "Logo to print on receipts."
     logo = RuntimeConfig.get_single().logo
     if logo:
-        logo = url_for('index.images', name=logo)
+        logo = url_for('index.images', name=logo, mode='full')
         logo_desc += f'Current logo:<br /><img src="{logo}" />'
     ConfigFormImpl.logo = FileField('Logo', description=logo_desc)
 
