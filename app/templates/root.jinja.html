@@ -6,6 +6,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
     {# TODO: maybe host this locally? -#}
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    {% if use_osk() %}
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/virtual-keyboard/1.30.3/css/keyboard-basic.min.css" integrity="sha512-2bVDVxlsH8oY3RrNeI1uJOAXWmjfEwQ9/dfJ/XM4dG5w8R3W3vSTQccpkzJWndrRo2HNXkiM4tjikPCp111sQg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -13,6 +17,18 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.11/draggable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.11/sortable.min.js"></script> -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    {% if use_osk() %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/virtual-keyboard/1.30.3/js/jquery.keyboard.min.js" integrity="sha512-kn7vywxyq0CbPJQ5sONZvgHQB7YSR/2q6xQmEz/KwiFcriJtXz5hZcyZhx6fpy/UiStulxD1TByHXaCZz4BJ9A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script>
+            $('input[type=text]').keyboard({
+                usePreview: false,
+                autoAccept: true,
+                autoAcceptOnEsc: true,
+            });
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block content %}

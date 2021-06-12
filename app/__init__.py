@@ -11,6 +11,8 @@ from flask import (
     )
 from flask_bootstrap import Bootstrap
 
+from app.lib import auth
+
 
 def create_app(config_filename=None):
     app = Flask(__name__)
@@ -101,6 +103,9 @@ def install_plugins(app):
     app.jinja_env.filters['bool_label'] = bool_label
     app.jinja_env.filters['image'] = image
     app.jinja_env.filters['strength_label'] = strength_label
+
+    app.jinja_env.globals['is_house_device'] = auth.is_house_device
+    app.jinja_env.globals['use_osk'] = auth.use_osk
 
 def register_blueprints(app):
     from .views import (

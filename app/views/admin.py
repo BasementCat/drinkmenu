@@ -15,9 +15,9 @@ from flask import (
 
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.forms.config import ConfigForm
-from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig, OrderStat, Event
+from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig, OrderStat, Event, Device
 from app.lib.printer import print_stuff, PrintError
-from app.lib.auth import require_login, set_house_device
+from app.lib.auth import require_login
 
 
 app = Blueprint('admin', __name__)
@@ -242,12 +242,8 @@ def config():
             form.new_event.data = ''
 
         flash("Configuration changes have been saved.", 'success')
-        if set_house_device(form.house_device.data):
-            flash("This device is configured as a house device - admin is logged out, names will not be saved", 'info')
-            return redirect(url_for('index.index'))
 
     return render_template('admin/config.jinja.html', form=form)
-
 
 
 @app.route('/stats', methods=['GET'])
@@ -308,3 +304,23 @@ def stats():
         stats_all=stats_all,
         totals=[('Total Count', 'count'), ('Total oz of Liquor', 'total_oz')]
     )
+
+
+
+@app.route('/devices', methods=['GET', 'POST'])
+@require_login(admin=True)
+def devices():
+    if request.method == 'POST':
+        updated = 0
+        for dev in Device.all():
+            if dev.device_id in request.form.getlist('delete'):
+                dev.delete()
+                flash(f"Deleted device {dev.device_id}", 'info')
+            else:
+                dev.is_house_device = dev.device_id in request.form.getlist('is_house_device')
+                dev.use_osk = dev.device_id in request.form.getlist('use_osk')
+                dev.save()
+                updated += 1
+        if updated:
+            flash(f"Updated {updated} devices", 'success')
+    return render_template('admin/devices.jinja.html', devices=Device.all())

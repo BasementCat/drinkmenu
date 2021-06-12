@@ -1,0 +1,141 @@
+{% extends "base.jinja.html" %}
+
+{% block title %}Devices{% endblock %}
+
+{# {% block scripts %}
+    {{ super() }}
+    <script>window.enable_autorefresh();</script>
+{% endblock %} #}
+
+{% block content %}
+    {{ super() }}
+    <div class="container">
+        <div class="row">
+            <form method="POST">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Device ID</th>
+                            <th>Is house device</th>
+                            <th>Use OSK</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dev in devices %}
+                            <tr>
+                                <td>{{ dev.device_id }}</td>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="is_house_device" value="{{ dev.device_id }}" {{ 'checked' if dev.is_house_device else '' }} />
+                                        Is house device
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="use_osk" value="{{ dev.device_id }}" {{ 'checked' if dev.use_osk else '' }} />
+                                        Use OSK
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="delete" value="{{ dev.device_id }}" />
+                                        Delete
+                                    </label>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </div>
+        {#
+        {% for title, src in (('Printed Orders', printed_orders), ('Orders', orders)) %}
+            <div class="row">
+                <h2>{{ title }}</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Drink Name</th>
+                            <th>Drink</th>
+                            <th>Components/Description</th>
+                            <th>Strength</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in src %}
+                            <tr>
+                                <td class="nowrap">{{ o.name }}</td>
+                                <td class="nowrap">{{ o.drink_name or '' }}</td>
+                                <td class="nowrap">
+                                    {% if o.drink %}
+                                        {{ get_drink(o.drink).name }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if o.drink_components %}
+                                        {% for c in get_components(o.drink_components) %}
+                                            {{ c.name }}{% if not loop.last %},{% endif %}
+                                        {% endfor %}
+                                    {% elif o.drink %}
+                                        {{ get_drink(o.drink).description }}
+                                    {% endif %}
+                                </td>
+                                <td class="nowrap">{{ o.strength |strength_label }}</td>
+                                <td class="nowrap">
+                                    <form class="form-inline" method="POST" action="{{ url_for('.print_order', id=o.doc_id) }}">
+                                        <button type="submit" class="btn btn-primary btn-xs"><i class="fa fa-print"></i> Print</button>
+                                    </form>
+                                    <form class="form-inline" method="POST" action="{{ url_for('.complete_order', id=o.doc_id) }}">
+                                        <button type="submit" class="btn btn-warning btn-xs"><i class="fa fa-check"></i> Complete</button>
+                                    </form>
+                                    <form class="form-inline" method="POST" action="{{ url_for('.delete_order', id=o.doc_id) }}">
+                                        <button type="submit" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+        <div class="row">
+            <h2>Saved Orders</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Drink Name</th>
+                        <th>Drink Components</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in saved_orders %}
+                        <tr>
+                            <td>{{ o.drink_name }}</td>
+                            <td>
+                                {% if o.drink_components %}
+                                    {% for c in get_components(o.drink_components) %}
+                                        {{ c.name }}{% if not loop.last %},{% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form class="form-inline" method="POST" action="{{ url_for('.delete_saved_order', id=o.doc_id) }}">
+                                    <input type="submit" class="btn btn-danger btn-xs" value="Delete" />
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <p>{{ total_orders_ev }} total orders served this event, {{ total_orders_all }} all time.</p>
+        </div>
+        #}
+    </div>
+{% endblock %}

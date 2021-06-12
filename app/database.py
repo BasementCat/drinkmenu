@@ -244,6 +244,21 @@ class RuntimeConfig(Model):
         return cls()
 
 
+class Device(Model):
+    class _schema(BaseSchema):
+        device_id = fields.Str(allow_none=False)
+        is_house_device = fields.Boolean(allow_none=False, missing=False)
+        use_osk = fields.Boolean(allow_none=False, missing=False)
+
+    @classmethod
+    def get_by_devid(cls, devid):
+        res = cls.find(device_id=devid)
+        if res:
+            # TODO: more than one w/ same devid is invalid
+            return res[0]
+        return None
+
+
 class OrderStat(Model):
     class _schema(BaseSchema):
         event = fields.Integer(missing=None)

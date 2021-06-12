@@ -22,8 +22,6 @@ def ConfigForm(*args, drink=None, **kwargs):
         description=ev_desc
     )
 
-    ConfigFormImpl.house_device = BooleanField('Make House Device')
-
     ConfigFormImpl.submit = SubmitField('Save')
 
     return ConfigFormImpl(*args, **kwargs)

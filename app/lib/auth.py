@@ -1,8 +1,8 @@
 import functools
 
-from flask import session, flash, redirect, url_for
+from flask import session, flash, redirect, url_for, g
 
-from app.database import RuntimeConfig
+from app.database import RuntimeConfig, Device
 
 
 def login(type_, password):
@@ -12,25 +12,34 @@ def login(type_, password):
     if check_password:
         if password == check_password:
             session['login_' + type_] = True
-            if type_ == 'admin' and is_house_device():
-                house_disabled = True
-                set_house_device(False)
         else:
             return False, None
     return True, house_disabled
 
 
+def get_device(prop=None):
+    dev = g.get('current_device')
+    if dev is None:
+        g.current_device = False
+        devid = session.get('device_id')
+        if devid:
+            dev = Device.get_by_devid(devid)
+            if dev:
+                g.current_device = dev
+
+    if prop:
+        if g.current_device:
+            return getattr(g.current_device, prop)
+        return False
+    return g.current_device
+
+
 def is_house_device():
-    return True if session.get('house_device') else False
+    return get_device('is_house_device')
 
 
-def set_house_device(v):
-    session['house_device'] = True if v else False
-    if session['house_device']:
-        session['login_user'] = True
-        session['login_admin'] = False
-        return True
-    return False
+def use_osk():
+    return get_device('use_osk')
 
 
 def require_login(admin=False):
@@ -41,7 +50,7 @@ def require_login(admin=False):
             if admin and config.admin_pass and not session.get('login_admin'):
                 flash("Admin login is required", 'danger')
                 return redirect(url_for('auth.index', type_='admin'))
-            if config.user_pass and not (session.get('login_admin') or session.get('login_user')):
+            if config.user_pass and not (session.get('login_admin') or session.get('login_user') or is_house_device()):
                 flash("Login is required", 'danger')
                 return redirect(url_for('auth.index', type_='user'))
             return callback(*args, **kwargs)

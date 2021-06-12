@@ -16,12 +16,22 @@ from flask import (
 import PIL
 from PIL import Image
 
-from app.database import Drink, DrinkComponent, Order, SavedOrder, Event
+from app.database import Drink, DrinkComponent, Order, SavedOrder, Event, Device
 from app.forms.orders import OrderForm
 from app.lib.auth import require_login, is_house_device
 
 
 app = Blueprint('index', __name__)
+
+
+@app.route('/init-device/<device_id>', methods=['GET'])
+def init_device(device_id):
+    session['device_id'] = device_id
+    dev = Device.get_by_devid(device_id)
+    if not dev:
+        dev = Device(device_id=device_id)
+        dev.save()
+    return redirect(url_for('.index'))
 
 
 @app.route('/', methods=['GET'])
