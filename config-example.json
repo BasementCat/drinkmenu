@@ -10,8 +10,28 @@
     "_DEFAULT_TIMEZONE": "America/Chicago",
     "SITE_NAME": "Drink Menu",
 
+    "ESCPOS_PRINTER_MODE": "bt",
     "ESCPOS_PRINTER_BT_ADDR": "1a:2b:3c:4d:5e:6f/1",
-    "ESCPOS_PRINTER_FMT": "lf,c,s2,name,s1,drink_name,drink,s0,drink_components,lf",
+
+    "ESCPOS_PRINTER_MODE": "usb",
+    "ESCPOS_PRINTER_ID": [8137, 8214],
+
+    "ESCPOS_PRINTER_IMAGE_IMPL": "bitImageRaster",
+    "ESCPOS_PRINTER_HAS_CUTTER": true,
+
+    "ESCPOS_PRINTER_FMT": [
+        {"command": "text", "value": "\n\n"},
+        {"command": "logo"},
+        {"command": "font", "align": "center", "size": [3, 2]},
+        {"command": "name"},
+        {"command": "font", "align": "center", "size": [2, 1]},
+        {"command": "drink_name"},
+        {"command": "drink"},
+        {"command": "font", "align": "center", "size": [1, 1]},
+        {"command": "drink_components"},
+        {"command": "text", "value": "\n\n"},
+        {"command": "cut", "partial": true}
+    ],
 
     "API_URL": "http://localhost:5000/api"
 }

@@ -10,7 +10,7 @@ try:
 except ImportError:
     pass
 
-from app.lib.printer import get_printer, print_queue, PrintError
+from app.lib.printer import get_printer, print_order, PrintError
 
 
 logger = logging.getLogger(__name__)
@@ -41,13 +41,13 @@ def run_print_queue():
             try:
                 # Print the job, and tell the server it's done
                 logger.debug("Printing job: %s", job)
-                id = print_queue(printer, job)
+                print_order(printer, job)
             except:
                 logger.error("Failed to print", exc_info=True)
-            else:
+            finally:
                 try:
-                    logger.debug("Inform api %s is done", id)
-                    requests.post(url + '/' + id).raise_for_status()
+                    logger.debug("Inform api %s is done", job['id'])
+                    requests.post(url + '/' + str(job['id'])).raise_for_status()
                 except:
                     logger.error("Failed to notify api job is done", exc_info=True)
         except:

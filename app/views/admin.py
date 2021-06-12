@@ -16,7 +16,7 @@ from flask import (
 from app.forms.drinks import DrinkForm, DrinkComponentForm
 from app.forms.config import ConfigForm
 from app.database import Drink, DrinkComponent, Order, SavedOrder, RuntimeConfig, OrderStat, Event, Device
-from app.lib.printer import print_stuff, PrintError
+from app.lib.printer import queue_order_to_print, PrintError
 from app.lib.auth import require_login
 
 
@@ -141,31 +141,12 @@ def orders():
 @app.route('/orders/print/<int:id>', methods=['POST'])
 @require_login(admin=True)
 def print_order(id):
-    order = Order.get(id)
-    if not order:
-        flash("No such order", 'danger')
+    try:
+        order = queue_order_to_print(order_id=id, force=True)
+    except PrintError as e:
+        flash(str(e), 'danger')
     else:
-        drink = None
-        if order.drink:
-            drink = Drink.get(order.drink)
-
-        drink_components = None
-        if order.drink_components:
-            drink_components = DrinkComponent.find(*order.drink_components)
-
-        try:
-            strength = f' [{order.strength}]' if order.strength else ''
-            print_stuff(
-                order.doc_id,
-                name=order.name,
-                drink_name=(order.drink_name + strength) if order.drink_name else None,
-                drink=(drink.name + strength) if drink else None,
-                drink_components=', '.join((c.name for c in drink_components)) if drink_components else None
-            )
-        except PrintError as e:
-            flash(str(e), 'danger')
-        else:
-            flash(f"Queued order {order.drink_name} for {order.name} for printing", 'success')
+        flash(f"Queued order {order.drink_name} for {order.name} for printing", 'success')
 
     return redirect(url_for('.orders'))
 

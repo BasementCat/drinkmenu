@@ -19,6 +19,7 @@ from PIL import Image
 from app.database import Drink, DrinkComponent, Order, SavedOrder, Event, Device
 from app.forms.orders import OrderForm
 from app.lib.auth import require_login, is_house_device
+from app.lib.printer import queue_order_to_print, PrintError
 
 
 app = Blueprint('index', __name__)
@@ -103,6 +104,11 @@ def order():
             SavedOrder(drink_name=params['drink_name'], drink_components=params['drink_components']).save()
         order = Order(event=Event.get_current_id(), **params)
         order.save()
+        try:
+            queue_order_to_print(order=order, auto=True)
+        except PrintError:
+            # Should be because we're not auto cutting and there's already a job queued
+            pass
         flash("Your order has been placed", 'success')
 
         return redirect(url_for('.index'))

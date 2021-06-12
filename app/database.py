@@ -99,13 +99,15 @@ class Model:
         return out
 
     @classmethod
-    def find(cls, *doc_ids, sort_key=None, **filters):
+    def find(cls, *doc_ids, sort_key=None, custom_conds=None, **filters):
         def _fetch():
             if doc_ids:
                 return list(filter(None, (cls.get(i) for i in doc_ids)))
 
             query = Query()
             conditions = []
+            for cond in custom_conds or []:
+                conditions.append(cond(query))
             for k, v in filters.items():
                 conditions.append(getattr(query, k) == v)
             search = conditions.pop(0)
@@ -223,6 +225,7 @@ class Order(Model):
         drink_components = fields.List(fields.Integer(), missing=lambda: [])
         strength = fields.Str(missing=None)
         printed = fields.Boolean(default=False, missing=False)
+        print_queued = fields.Integer(default=0, missing=0)
 
 
 class RuntimeConfig(Model):

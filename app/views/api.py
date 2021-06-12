@@ -12,7 +12,7 @@ from flask import (
     request,
 )
 
-from app.lib.printer import get_print_job, clear_print_job, PrintError
+from app.lib.printer import get_queued_order, clear_queued_order, get_order_printable, PrintError
 from app.lib.auth import require_login
 from app.database import Order, Drink, DrinkComponent
 
@@ -44,20 +44,16 @@ def index():
 
 
 @app.route('/print/job', methods=['GET', 'POST'])
-@app.route('/print/job/<id>', methods=['GET', 'POST'])
+@app.route('/print/job/<int:id>', methods=['GET', 'POST'])
 @json_response
 def print_job(id=None):
     if request.method == 'POST':
         if not id:
             abort(400, "An ID is required to clear")
-        doc_id = clear_print_job(id)
+        doc_id = clear_queued_order(order_id=id)
         if not doc_id:
             abort(400, "The ID is invalid")
 
-        order = Order.get(doc_id)
-        if order:
-            order.printed = True
-            order.save()
         return "OK"
 
     elif id:
@@ -67,10 +63,10 @@ def print_job(id=None):
         to = int(request.args.get('timeout') or 10)
         t = time.time()
         while time.time() - t < to:
-            res = get_print_job()
+            res = get_queued_order()
             if res:
-                return res
-            time.sleep(0.25)
+                return get_order_printable(res)
+            time.sleep(1)
         return None
 
 
