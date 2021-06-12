@@ -229,6 +229,7 @@ class RuntimeConfig(Model):
     class _schema(BaseSchema):
         user_pass = fields.Str(allow_none=True, missing=None)
         admin_pass = fields.Str(allow_none=True, missing=None)
+        logo = fields.Str(allow_none=True, missing=None)
 
     @classmethod
     def get_fields(cls):

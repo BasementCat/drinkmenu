@@ -224,7 +224,12 @@ def config():
     c = RuntimeConfig.get_single()
     form = ConfigForm(obj=c, house_device=session.get('house_device'))
     if form.validate_on_submit():
+        logo = form.save_image(c.logo)
+        if logo:
+            c.logo = logo
         for k in RuntimeConfig.get_fields():
+            if k == 'logo':
+                continue
             f = getattr(form, k, None)
             if f:
                 setattr(c, k, f.data or None)

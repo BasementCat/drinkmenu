@@ -21,15 +21,11 @@ def HasImageMixin(image_field_name='image'):
             self.image_field_data = None
             super().__init__(*args, **kwargs)
 
-        def populate_obj(self, obj):
-            old_img = getattr(obj, image_field_name, None)
-            super().populate_obj(obj)
-            # Reset back to old img - it'll get overwritten if there is a newly uploaded image
-            setattr(obj, image_field_name, old_img)
+        def save_image(self, old_img=None):
             # Store the file that was validated
             if self.image_field_data:
                 # Remove the old image if it exists
-                if getattr(obj, image_field_name, None):
+                if old_img:
                     old_img = os.path.join(current_app.config['DATA_DIRECTORY'], 'images', getattr(obj, image_field_name))
                     if os.path.exists(old_img):
                         os.unlink(old_img)
@@ -46,10 +42,19 @@ def HasImageMixin(image_field_name='image'):
                                 written += fp.write(chunk[written:])
 
                             mime_data = None
-                    setattr(obj, image_field_name, filename)
+                    return filename
                 finally:
                     file.close()
                     self.image_field_data = None
+
+        def populate_obj(self, obj):
+            old_img = getattr(obj, image_field_name, None)
+            super().populate_obj(obj)
+            # Reset back to old img - it'll get overwritten if there is a newly uploaded image
+            setattr(obj, image_field_name, old_img)
+            new_img = self.save_image(old_img=old_img)
+            if new_img:
+                setattr(obj, image_field_name, new_img)
 
     def validate_imfield(form, field):
         file = field.data
