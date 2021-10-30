@@ -18,7 +18,14 @@
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                {{ wtf.quick_form(form) }}
+                <form method="POST" class="form">
+                    {{ form.hidden_tag() }}
+                    {% for field in form %}
+                    {% if not field.flags.hidden %}
+                        {{ wtf.form_field(field, autocomplete='off') }}
+                    {% endif %}
+                    {% endfor %}
+                </form>
             </div>
     </div>
 {% endblock %}
