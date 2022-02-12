@@ -1,0 +1,8 @@
+---
+
+drinkmenu:
+  repo:
+    dest: /home/pi/drinkmenu
+    repo: https://github.com/BasementCat/drinkmenu.git
+    version: HEAD
+  venv: /home/pi/drinkmenu-venv

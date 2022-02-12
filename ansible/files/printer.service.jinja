@@ -1,0 +1,15 @@
+[Unit]
+Description=Drinkmenu printing service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=pi
+ExecStart={{ drinkmenu.venv }}/bin/flask queue print
+WorkingDirectory={{ drinkmenu.repo.dest }}
+
+[Install]
+WantedBy=multi-user.target
