@@ -24,7 +24,9 @@ Note that the kiosk setup is untested!
 
 #### FullPageOS
 
-After flashing, note that the ssh and wpa_supplicant.conf files already exist.  Edit wpa_supplicant.conf and configure with your wifi credentials (if not using ethernet), and edit fullpageos.txt to the URL of your Drinkmenu installation.
+After flashing, note that the ssh and fullpageos-wpa-supplicant.conf files already exist.  Edit fullpageos-wpa-supplicant.conf and configure with your wifi credentials (if not using ethernet), and edit fullpageos.txt to the URL of your Drinkmenu installation.
+
+You may want to set the initial URL to https://domain.name/path/init-device/<device-id> where "<device-id>" is a unique identifier for the device - this allows you to configure some parameters from the admin pages.
 
 ### Configure Ansible
 

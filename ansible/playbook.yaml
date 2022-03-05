@@ -5,10 +5,10 @@
   hosts: all
   tasks:
     # TODO: probably try to ensure this only runs if swap is on - otherwise mkinitramfs may take a while
-    # -
-    #   name: Disable swap
-    #   shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove && mkinitramfs -o /boot/initrd
-    #   become: true
+    -
+      name: Disable swap
+      shell: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove && mkinitramfs -o /boot/initrd
+      become: true
 
     -
       name: Allow updates
@@ -139,6 +139,27 @@
         src: "{{ config_file }}"
 
     -
+      name: Configure usb permissions
+      template:
+        src: files/printer.rules.jinja
+        dest: /etc/udev/rules.d/50-usbprinter.rules
+        mode: 0644
+        owner: root
+        group: root
+      when: usb_printer_id is defined
+      become: true
+      notify:
+        - Reload udev rules
+
+    -
+      name: Add user to lp group
+      user:
+        name: pi
+        groups: lp
+        append: yes
+      become: true
+
+    -
       name: Create print service
       template:
         src: files/printer.service.jinja
@@ -151,4 +172,10 @@
         name: printer
         enabled: yes
         state: started
+      become: true
+
+  handlers:
+    -
+      name: Reload udev rules
+      shell: udevadm control --reload && udevadm trigger
       become: true

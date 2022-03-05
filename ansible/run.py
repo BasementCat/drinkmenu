@@ -93,6 +93,7 @@ def _ask_config(context):
         config['ESCPOS_PRINTER_BT_ADDR'] = '{}/{}'.format(addr, svc)
     elif config['ESCPOS_PRINTER_MODE'] == 'usb':
         config['ESCPOS_PRINTER_ID'] = list(map(int, ask("Enter the printer's USB manufacturer & ID (decimal, '1234:5678')", match=r'^\d+:\d+').split(':')))
+        context['usb_printer_id'] = list(map(lambda v: '{:04x}'.format(v), config['ESCPOS_PRINTER_ID']))
 
     config['ESCPOS_PRINTER_IMAGE_IMPL'] = ask("Printer image implementation (don't set unless you know what you're doing)", dfl='bitImageRaster')
     config['ESCPOS_PRINTER_HAS_CUTTER'] = ask_bool("Does the printer have a cutter?", dfl=False)
@@ -144,11 +145,13 @@ all:
     vars:
         config_file: ./config.json
         kiosk_url: "{}"
+        {}
 '''.format(
     addr, port, user,
     '{hosts: {pi: {}}}' if is_kiosk else '',
     '{hosts: {pi: {}}}' if is_printer else '',
-    context['prod_url']
+    context['prod_url'],
+    'usb_printer_id: {}'.format(json.dumps(context['usb_printer_id'])) if context.get('usb_printer_id') else '',
 )
 
         with open('./inventory.yaml', 'w') as fp:
