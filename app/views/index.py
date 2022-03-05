@@ -37,9 +37,12 @@ def init_device(device_id):
 
 @app.route('/', methods=['GET'])
 def index():
-    drinks = Drink.find(is_orderable=True, in_stock=True, sort_key='order')
+    # drinks = Drink.find(is_orderable=True, in_stock=True, sort_key='order')
     saved_orders = SavedOrder.all()
-    drink_components = DrinkComponent.find(in_stock=True, sort_key='order')
+    # drink_components = DrinkComponent.find(in_stock=True, sort_key='order')
+    # FIXME: ordering by name for now, since custom sorting is broken
+    drinks = Drink.find(is_orderable=True, in_stock=True, sort_key='name')
+    drink_components = DrinkComponent.find(in_stock=True, sort_key='name')
 
     in_stock_drink_components = set([d.doc_id for d in drink_components])
     def _filter_saved(o):
